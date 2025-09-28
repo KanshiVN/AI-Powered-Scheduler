@@ -980,3 +980,9 @@ h2 {
     }
 }
 /* Hamburger */
+
+@media (max-width: 768px) {
+    .sidebar.show ~ .main-content .menu-toggle .feather {
+        color: #FFFFFF; /* White icon for better contrast */
+    }
+}
