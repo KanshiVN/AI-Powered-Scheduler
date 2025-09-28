@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="#" class="logo">AI Powered <span>Scheduler</span></a>
+    </header>
+
+    <main class="login-container">
+        <div class="login-card">
+            <h2>Welcome back</h2>
+            <p>Please select your role and sign in</p>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <select id="role" required>
+                        <option value="" disabled selected>Select Role</option>
+                        <option value="hod">HOD</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="exam_control">Exam Control</option>
+                        <option value="student">Student</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary">SIGN IN</button>
+            </form>
+        </div>
+
+        <div class="quick-login-card">
+            <p>Quick Login</p>
+            <div class="quick-login-buttons">
+                <button class="btn btn-secondary" data-role="hod">HOD</button>
+                <button class="btn btn-secondary" data-role="faculty">Faculty</button>
+                <button class="btn btn-secondary" data-role="exam_control">Exam Control</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

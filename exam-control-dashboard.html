@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Control Dashboard - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar"><i data-feather="user"></i></div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Prof.</span>
+                        <span class="user-role">Exam Control Department</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="exam-control-dashboard.html" class="active"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                    <li><a href="exam-control-generator.html"><i data-feather="edit-3"></i><span>Exams</span></a></li>
+                    <li><a href="exam-control-viewer.html"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="#"><i data-feather="users"></i><span>Meetings</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logout-btn" class="logout-link"><i data-feather="log-out"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Dashboard</h1>
+                <p id="welcome-message">Welcome, Sir. Here's an overview of your Responsibilities.</p>
+            </header>
+
+            <section class="todays-schedule">
+                <h2>Today's Schedule</h2>
+                <div class="schedule-grid">
+                    <div class="schedule-card">
+                        <h3>Scheduled Exams</h3>
+                        <div class="card-content">
+                            <div class="placeholder-item"></div>
+                            <div class="placeholder-item"></div>
+                        </div>
+                    </div>
+                    <div class="schedule-card">
+                        <h3>Upcoming Meetings</h3>
+                        <div class="card-content">
+                            <div class="placeholder-item purple"></div>
+                            <div class="placeholder-item purple"></div>
+                        </div>
+                    </div>
+                    <div class="schedule-card">
+                        <h3>Upcoming Events</h3>
+                        <div class="card-content">
+                            <div class="placeholder-item purple"></div>
+                            <div class="placeholder-item purple"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/exam-control-dashboard.js"></script>
+</body>
+</html>

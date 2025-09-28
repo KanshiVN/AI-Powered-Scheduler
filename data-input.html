@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Management - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar"><i data-feather="user"></i></div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Dr. Rohini Hanchate</span>
+                        <span class="user-role">HOD, Computer Engineering</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                    <li><a href="data-input.html" class="active"><i data-feather="database"></i><span>Data Input</span></a></li>
+                    <li><a href="generate-timetable.html"><i data-feather="grid"></i><span>Generate Timetable</span></a></li>
+                    <li><a href="view-timetable.html"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="exams.html"><i data-feather="edit-3"></i><span>Exams</span></a></li>
+                    <li><a href="#"><i data-feather="users"></i><span>Meetings</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="login.html" id="logout-btn" class="logout-link"><i data-feather="log-out"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Data Management</h1>
+                <p>Manage rooms, faculties, subjects, and batches</p>
+            </header>
+
+            <div class="tabs-container">
+                <button class="tab-link active" data-tab="grades">Grades</button>
+                <button class="tab-link" data-tab="subject">Subject</button>
+                <button class="tab-link" data-tab="faculties">Faculties</button>
+                <button class="tab-link" data-tab="rooms">Rooms</button>
+            </div>
+
+            <div id="grades" class="tab-content active">
+                <div class="content-header-secondary">
+                    <h3>Define classes or grades</h3>
+                    <p>Add classes or groups or grades and assign class teachers.</p>
+                </div>
+                
+                <div class="data-management-grid">
+                    <div class="list-container">
+                        <div class="list-header">
+                            <button class="btn-export"><i data-feather="share"></i> Export</button>
+                            <button class="btn-add-new"><i data-feather="plus"></i> Add New</button>
+                        </div>
+                        <div class="list-body">
+                            <div class="list-row header">
+                                <span class="list-col-main">Classes</span>
+                                <span>Action</span>
+                            </div>
+                            <div class="list-row"><span class="list-col-main">BE A</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">BE B</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">TE A</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">TE B</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">TE C</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">SE A</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">SE B</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">SE C</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                        </div>
+                    </div>
+                    <div class="uploader-container">
+                        <label for="csv-upload" class="csv-uploader">
+                            <i data-feather="upload-cloud"></i>
+                            <span>Upload CSV document</span>
+                        </label>
+                        <input type="file" id="csv-upload" accept=".csv" hidden>
+                    </div>
+                </div>
+            </div>
+            </main>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/data-input.js"></script>
+</body>
+</html>

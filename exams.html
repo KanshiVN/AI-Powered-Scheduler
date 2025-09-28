@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exams - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar"><i data-feather="user"></i></div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Dr. Rohini Hanchate</span>
+                        <span class="user-role">HOD, Computer Engineering</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                    <li><a href="data-input.html"><i data-feather="database"></i><span>Data Input</span></a></li>
+                    <li><a href="generate-timetable.html"><i data-feather="grid"></i><span>Generate Timetable</span></a></li>
+                    <li><a href="view-timetable.html"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="exams.html" class="active"><i data-feather="edit-3"></i><span>Exams</span></a></li>
+                    <li><a href="#"><i data-feather="users"></i><span>Meetings</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logout-btn" class="logout-link"><i data-feather="log-out"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Exam Timetable & Supervision duties</h1>
+                <p>View exam and supervision schedule</p>
+            </header>
+
+            <div class="stepper-container">
+                <div class="step active">Exam Timetable</div>
+                <div class="step">Supervision duties</div>
+            </div>
+
+            <div class="viewer-content">
+                <div class="viewer-header">
+                    <div class="content-header-secondary">
+                        <h3>Exam Schedule</h3>
+                        <p>Exam schedule of the week</p>
+                    </div>
+                    <button class="btn-export"><i data-feather="share"></i> Export</button>
+                </div>
+
+                <div class="viewer-card">
+                    <div class="settings-card-header">
+                        <div class="card-title">
+                            <i data-feather="clock"></i>
+                            <h4>Exam Timetable</h4>
+                        </div>
+                        <div class="select-wrapper">
+                            <select id="select-class">
+                                <option value="">Select Class</option>
+                                <option value="be-a">BE A</option>
+                                <option value="be-b">BE B</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="viewer-card-body">
+                        <div class="exam-grid">
+                            <div class="grid-cell grid-header"></div>
+                            <div class="grid-cell grid-header">10.00 - 12.30</div>
+                            <div class="grid-cell grid-header">2.00 - 4.30</div>
+                            
+                            <div class="grid-cell day-header">MON</div>
+                            <div class="grid-cell lecture-slot mon"></div>
+                            <div class="grid-cell lecture-slot mon"></div>
+                            
+                            <div class="grid-cell day-header">TUE</div>
+                            <div class="grid-cell lecture-slot tue"></div>
+                            <div class="grid-cell lecture-slot tue"></div>
+                            
+                            <div class="grid-cell day-header">WED</div>
+                            <div class="grid-cell lecture-slot wed"></div>
+                            <div class="grid-cell lecture-slot wed"></div>
+                           
+                            <div class="grid-cell day-header">THR</div>
+                            <div class="grid-cell lecture-slot thr"></div>
+                            <div class="grid-cell lecture-slot thr"></div>
+
+                            <div class="grid-cell day-header">FRI</div>
+                            <div class="grid-cell lecture-slot fri"></div>
+                            <div class="grid-cell lecture-slot fri"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/exams.js"></script>
+</body>
+</html>

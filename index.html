@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Dashboard - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i data-feather="user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Dr. Rohini Hanchate</span>
+                        <span class="user-role">HOD, Computer Engineering</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html" class="active"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                    <li><a href="data-input.html"><i data-feather="database"></i><span>Data Input</span></a></li>
+                    <li><a href="generate-timetable.html"><i data-feather="grid"></i><span>Generate Timetable</span></a></li>
+                    <li><a href="view-timetable.html"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="exams.html"><i data-feather="edit-3"></i><span>Exams</span></a></li>
+                    <li><a href="#"><i data-feather="users"></i><span>Meetings</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="login.html" id="logout-btn" class="logout-link"><i data-feather="log-out"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Dashboard</h1>
+                <p id="welcome-message">Welcome, Dr. Rohini Hanchate. Here's an overview of your Responsibilities.</p>
+            </header>
+
+            <section class="quick-actions">
+                <h2>Quick Action</h2>
+                <div class="action-buttons">
+                    <button class="action-btn"><i data-feather="plus-circle"></i> Create Class Timetable</button>
+                    <button class="action-btn"><i data-feather="plus-circle"></i> Schedule Meeting</button>
+                </div>
+            </section>
+
+            <section class="todays-schedule">
+                <h2>Today's Schedule</h2>
+                <div class="schedule-grid">
+                    <div class="schedule-card">
+                        <h3>Upcoming Lectures</h3>
+                        <div class="card-content">
+                            <div class="placeholder-item"></div>
+                            <div class="placeholder-item"></div>
+                        </div>
+                    </div>
+                    <div class="schedule-card">
+                        <h3>Upcoming Meetings</h3>
+                        <div class="card-content">
+                            <div class="placeholder-item purple"></div>
+                            <div class="placeholder-item purple"></div>
+                        </div>
+                    </div>
+                    <div class="schedule-card">
+                        <h3>Upcoming Events</h3>
+                        <div class="card-content">
+                            <div class="placeholder-item purple"></div>
+                            <div class="placeholder-item purple"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/dashboardHOD.js"></script>
+</body>
+</html>

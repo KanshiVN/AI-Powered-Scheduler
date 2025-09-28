@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Generator - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar"><i data-feather="user"></i></div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Prof.</span>
+                        <span class="user-role">Exam Control Department</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="exam-control-dashboard.html"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                    <li><a href="exam-control-generator.html" class="active"><i data-feather="edit-3"></i><span>Exams</span></a></li>
+                    <li><a href="exam-control-viewer.html"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="#"><i data-feather="users"></i><span>Meetings</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logout-btn" class="logout-link"><i data-feather="log-out"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Exam Timetable Generator</h1>
+            </header>
+
+            <div class="stepper-container">
+                <div class="step active">Exam Timetable</div>
+                <div class="step">Supervision duties</div>
+            </div>
+
+            <div class="viewer-content">
+                <div class="viewer-header">
+                    <div class="content-header-secondary">
+                        <h3>General Settings</h3>
+                        <p>Set up basic timetable parameters</p>
+                    </div>
+                    <button class="btn-add-new">Generate Timetable</button>
+                </div>
+
+                <div class="generator-grid">
+                    <div class="generator-card">
+                        <label for="select-semester">Select Semester</label>
+                        <div class="select-wrapper">
+                            <select id="select-semester"><option value=""></option></select>
+                        </div>
+                    </div>
+                    <div class="generator-card">
+                        <label for="available-rooms">Available Rooms</label>
+                        <div class="select-wrapper">
+                            <select id="available-rooms"><option value=""></option></select>
+                        </div>
+                    </div>
+                    <div class="generator-card">
+                        <label for="select-date">Select Date</label>
+                        <div class="select-wrapper">
+                            <select id="select-date"><option value=""></option></select>
+                        </div>
+                    </div>
+                    <div class="generator-card">
+                        <label for="select-time">Select Time</label>
+                        <div class="select-wrapper">
+                            <select id="select-time"><option value=""></option></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/exam-control-generator.js"></script>
+</body>
+</html>
