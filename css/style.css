@@ -200,7 +200,11 @@ body {
     flex-direction: column;
     height: 100vh;
     position: fixed;
+    top: 0;
+    left: 0;
     padding: 1.5rem;
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
 }
 
 .user-profile {
@@ -291,6 +295,7 @@ body {
     flex-grow: 1;
     margin-left: 280px; /* Same as sidebar width */
     padding: 2.5rem 3.5rem;
+    transition: margin-left 0.3s ease-in-out;
 }
 
 .content-header h1 {
@@ -542,7 +547,6 @@ h2 {
 
 /* Time table generation navbar */
 /* --- Timetable Generator Page Styles --- */
-/* --- Timetable Generator Page Styles --- */
 .stepper-container {
     display: flex;
     background-color: #F3F4F6; /* Light grey background */
@@ -731,12 +735,19 @@ h2 {
     padding: 2rem;
 }
 
+/* Add this wrapper in your HTML around the timetable-grid */
+.timetable-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
 .timetable-grid {
     display: grid;
     /* Define 9 columns: 1 for day names, 6 for lectures, 2 for breaks */
     grid-template-columns: 0.5fr 1fr 1fr 0.2fr 1fr 1fr 0.2fr 1fr 1fr;
     gap: 0.75rem;
     text-align: center;
+    min-width: 900px; /* Force horizontal scroll on smaller screens */
 }
 
 .grid-cell {
@@ -768,6 +779,8 @@ h2 {
 .lecture-slot {
     min-height: 60px;
     border-radius: 8px;
+    font-size: 0.8rem; /* Smaller font for slots */
+    padding: 0.25rem;
 }
 /* Color coding for lecture slots */
 .lecture-slot.mon { background-color: #E0E7FF; }
@@ -778,8 +791,6 @@ h2 {
 /* View timetable */
 
 
-
-
 /* --- Exam Timetable Page Styles --- */
 .exam-grid {
     display: grid;
@@ -787,9 +798,8 @@ h2 {
     grid-template-columns: 0.5fr 1fr 1fr;
     gap: 1rem;
     text-align: center;
+    min-width: 600px;
 }
-/* --- Exam Timetable Page Styles --- */
-
 
 /* --- Exam Generator Page Styles --- */
 .generator-grid {
@@ -822,3 +832,151 @@ h2 {
     display: flex;
     gap: 1rem;
 }
+
+/*
+==============================================
+--- Responsive Media Queries ---
+==============================================
+*/
+
+/* --- For Tablets (Portrait & Landscape) --- */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 260px;
+    }
+
+    .main-content {
+        margin-left: 260px;
+        padding: 2rem;
+    }
+
+    .data-management-grid {
+        grid-template-columns: 1fr; /* Stack on tablets */
+    }
+
+    .generator-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- For Mobile Phones --- */
+@media (max-width: 768px) {
+    /* --- General Layout --- */
+    .sidebar {
+        transform: translateX(-100%); /* Hide sidebar off-screen */
+        box-shadow: 0 0 25px rgba(0,0,0,0.2);
+    }
+    /* Add this class with JS to show the sidebar */
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0; /* Full width content */
+        padding: 1.5rem 1rem;
+    }
+
+    .main-header {
+        padding: 1.5rem;
+    }
+
+    /* --- Typography --- */
+    .login-card h2 {
+        font-size: 2rem;
+    }
+    .content-header h1 {
+        font-size: 1.75rem;
+    }
+    h2 {
+        font-size: 1.15rem;
+    }
+
+    /* --- Login Page --- */
+    .login-container {
+        padding: 1rem;
+    }
+    .login-card, .quick-login-card {
+        padding: 2rem 1.5rem;
+    }
+    .quick-login-buttons {
+        flex-direction: column;
+    }
+
+    /* --- Dashboard & Content --- */
+    .action-buttons {
+        flex-wrap: wrap; /* Allow buttons to wrap */
+    }
+
+    .tabs-container {
+        flex-wrap: wrap; /* Allow tabs to wrap if needed */
+    }
+    .tab-link {
+        margin-right: 1rem;
+    }
+
+    .list-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* --- Timetable Generator --- */
+    .stepper-container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .settings-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .lecture-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    /* --- Timetable Viewer --- */
+    .viewer-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    .viewer-card-body {
+        padding: 1rem;
+    }
+}
+
+
+/* Hamburger */
+/* --- Mobile Menu Toggle Button --- */
+.menu-toggle {
+    display: none; /* Hidden on desktop by default */
+    position: absolute;
+    top: 2.5rem;
+    left: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001; /* Make sure it's on top of other content */
+}
+
+.menu-toggle .feather {
+    width: 28px;
+    height: 28px;
+    color: var(--text-dark);
+}
+
+/* This media query shows the button ONLY on mobile screens */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+    
+    /* Adjusts header padding to make space for the button */
+    .content-header {
+        padding-top: 2.5rem;
+    }
+}
+/* Hamburger */
