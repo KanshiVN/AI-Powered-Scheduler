@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable Generator - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar"><i data-feather="user"></i></div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Dr. Rohini Hanchate</span>
+                        <span class="user-role">HOD, Computer Engineering</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                    <li><a href="data-input.html"><i data-feather="database"></i><span>Data Input</span></a></li>
+                    <li><a href="generate-timetable.html" class="active"><i data-feather="grid"></i><span>Generate Timetable</span></a></li>
+                    <li><a href="view-timetable.html"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="exams.html"><i data-feather="edit-3"></i><span>Exams</span></a></li>
+                    <li><a href="#"><i data-feather="users"></i><span>Meetings</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="login.html" id="logout-btn" class="logout-link"><i data-feather="log-out"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <button class="menu-toggle" id="menu-toggle-btn">
+                <i data-feather="menu"></i>
+            </button>
+            <header class="content-header">
+                <h1>Timetable Generator</h1>
+                <p>Configure and generate optimized timetables</p>
+            </header>
+
+            <div class="stepper-container">
+                <div class="step active" data-tab="general-settings">General Settings</div>
+                <div class="step" data-tab="lessons">Lessons</div>
+                <div class="step" data-tab="faculty-choice">Faculty Choice</div>
+                <div class="step" data-tab="review-generate">Review & Generate</div>
+            </div>
+
+            <div id="general-settings" class="tab-content active">
+                <div class="generator-content">
+                    <div class="content-header-secondary">
+                        <h3>General Settings</h3>
+                        <p>Set up basic timetable parameters</p>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <div class="card-title">
+                                <i data-feather="clock"></i>
+                                <h4>Time Settings</h4>
+                            </div>
+                            <div class="lectures-per-day">
+                                <label for="lectures-count">Lectures per day</label>
+                                <input type="number" id="lectures-count" value="6" min="1" max="12">
+                            </div>
+                        </div>
+                        <div class="settings-card-body" id="lecture-rows-container">
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="lessons" class="tab-content">
+                <div class="generator-content">
+                    <div class="content-header-secondary">
+                        <h3>Lessons</h3>
+                        <p>Set up required number of hours per week for each subject</p>
+                    </div>
+                    <div class="sub-header-controls">
+                        <div class="select-wrapper">
+                            <select id="select-class-lesson">
+                                <option value="be">BE</option>
+                                <option value="te">TE</option>
+                                <option value="se">SE</option>
+                            </select>
+                        </div>
+                        <div class="header-actions">
+                            <div class="toggle-switch">
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>Show Short name</span>
+                            </div>
+                            <button class="btn-export btn-icon"><i data-feather="arrow-up-down"></i> Sort A-Z</button>
+                            <button class="btn-export btn-icon"><i data-feather="upload"></i> Bulk Import</button>
+                            <button class="btn-add-new"><i data-feather="plus"></i> Add Subject</button>
+                        </div>
+                    </div>
+                    <div class="lesson-list-container">
+                        <div class="lesson-list-row header">
+                            <span class="col-subject">Subject</span>
+                            <span class="col-short-name">Short name</span>
+                            <span class="col-availability">Availability</span>
+                            <span class="col-hrs-week">Hrs per week</span>
+                            <span class="col-action">Action</span>
+                        </div>
+                        </div>
+                </div>
+            </div>
+            
+            <div id="faculty-choice" class="tab-content">
+                <div class="generator-content">
+                    <div class="content-header-secondary">
+                        <h3>Faculty Subject Choice</h3>
+                        <p>Display of faculty choice of subjects</p>
+                    </div>
+
+                    <div class="sub-header-controls">
+                        <div class="search-bar">
+                            <i data-feather="search"></i>
+                            <input type="text" placeholder="Search name">
+                        </div>
+                        <div class="header-actions">
+                            <div class="toggle-switch">
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span>Show Short name</span>
+                            </div>
+                            <button class="btn-export btn-icon"><i data-feather="arrow-up-down"></i> Sort A-Z</button>
+                            <button class="btn-export btn-icon"><i data-feather="upload"></i> Bulk Import</button>
+                            <button class="btn-add-new"><i data-feather="plus"></i> Add Professor</button>
+                        </div>
+                    </div>
+
+                    <div class="faculty-choice-list-container">
+                        <div class="faculty-choice-list-row header">
+                            <span class="col-prof-name">Professor name</span>
+                            <span class="col-short-name">Short name</span>
+                            <span class="col-se">SE</span>
+                            <span class="col-te">TE</span>
+                            <span class="col-be">BE</span>
+                            <span class="col-action">Action</span>
+                        </div>
+
+                        <div class="faculty-choice-list-row">
+                            <span class="col-prof-name">Neha Bhagwat</span>
+                            <span class="col-short-name">NB</span>
+                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
+                        </div>
+                        <div class="faculty-choice-list-row">
+                            <span class="col-prof-name">Saurabh Saoji</span>
+                            <span class="col-short-name">SS</span>
+                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
+                        </div>
+                        <div class="faculty-choice-list-row">
+                            <span class="col-prof-name">Pritam Ahire</span>
+                            <span class="col-short-name">PA</span>
+                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
+                        </div>
+                        <div class="faculty-choice-list-row">
+                            <span class="col-prof-name">Renuka Kajale</span>
+                            <span class="col-short-name">RK</span>
+                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
+                        </div>
+                        <div class="faculty-choice-list-row">
+                            <span class="col-prof-name">Vaishali Dhawas</span>
+                            <span class="col-short-name">VD</span>
+                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
+                        </div>
+                        <div class="faculty-choice-list-row">
+                            <span class="col-prof-name">Nilesh Kamble</span>
+                            <span class="col-short-name">NK</span>
+                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
+                        </div>
+                        <div class="faculty-choice-list-row">
+                            <span class="col-prof-name">Tushar Waykole</span>
+                            <span class="col-short-name">TW</span>
+                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
+                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="review-generate" class="tab-content"></div>
+
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/generate-timetable.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

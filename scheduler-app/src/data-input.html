@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Management - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar"><i data-feather="user"></i></div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Dr. Rohini Hanchate</span>
+                        <span class="user-role">HOD, Computer Engineering</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                    <li><a href="data-input.html" class="active"><i data-feather="database"></i><span>Data Input</span></a></li>
+                    <li><a href="generate-timetable.html"><i data-feather="grid"></i><span>Generate Timetable</span></a></li>
+                    <li><a href="view-timetable.html"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="exams.html"><i data-feather="edit-3"></i><span>Exams</span></a></li>
+                    <li><a href="#"><i data-feather="users"></i><span>Meetings</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="login.html" id="logout-btn" class="logout-link"><i data-feather="log-out"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+              <button class="menu-toggle" id="menu-toggle-btn">
+                  <i data-feather="menu"></i>
+              </button>
+            <header class="content-header">
+                <h1>Data Management</h1>
+                <p>Manage rooms, faculties, subjects, and batches</p>
+            </header>
+
+            <div class="tabs-container">
+                <button class="tab-link" data-tab="classes">Classes</button>
+                <button class="tab-link" data-tab="subject">Subject</button>
+                <button class="tab-link active" data-tab="faculties">Faculties</button>
+                <button class="tab-link" data-tab="rooms">Rooms</button>
+            </div>
+
+            <div id="classes" class="tab-content">
+                <div class="content-header-secondary">
+                    <h3>Define classes or grades</h3>
+                    <p>Add classes or groups or grades and assign class teachers.</p>
+                </div>
+                
+                <div class="data-management-grid">
+                    <div class="list-container">
+                        <div class="list-header">
+                            <button class="btn-export"><i data-feather="share"></i> Export</button>
+                            <button class="btn-add-new"><i data-feather="plus"></i> Add New</button>
+                        </div>
+                        <div class="list-body">
+                            <div class="list-row header">
+                                <span class="list-col-main">Classes</span>
+                                <span>Action</span>
+                            </div>
+                            <div class="list-row"><span class="list-col-main">BE A</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">BE B</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <div class="list-row"><span class="list-col-main">TE A</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                        </div>
+                    </div>
+                    <div class="uploader-container">
+                        <label for="csv-upload" class="csv-uploader">
+                            <i data-feather="upload-cloud"></i>
+                            <span>Upload CSV document</span>
+                        </label>
+                        <input type="file" id="csv-upload" accept=".csv" hidden>
+                    </div>
+                </div>
+            </div>
+
+            <div id="subject" class="tab-content">
+                <div class="content-header-secondary">
+                    <h3>Subjects/Courses</h3>
+                    <p>Add all the subjects or courses you want to schedule</p>
+                </div>
+                
+                <div class="sub-header-controls">
+                    <div class="select-wrapper">
+                        <select id="select-class-subject">
+                            <option value="be">BE</option>
+                            <option value="te">TE</option>
+                            <option value="se">SE</option>
+                        </select>
+                    </div>
+                    <div class="header-actions">
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Show Short name</span>
+                        </div>
+                        <button class="btn-export btn-icon"><i data-feather="arrow-up-down"></i> Sort A-Z</button>
+                        <button class="btn-export btn-icon"><i data-feather="upload"></i> Bulk Import</button>
+                        <button class="btn-add-new"><i data-feather="plus"></i> Add Subject</button>
+                    </div>
+                </div>
+
+                <div class="subject-list-container">
+                    <div class="subject-list-row header">
+                        <span class="col-subject">Subject</span>
+                        <span class="col-short-name">Short name</span>
+                        <span class="col-availability">Availability</span>
+                        <span class="col-action">Action</span>
+                    </div>
+                    <div class="subject-list-row">
+                        <input type="text" class="col-subject" value="Machine learning">
+                        <input type="text" class="col-short-name" value="ML">
+                        <div class="col-availability">
+                            <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
+                        </div>
+                        <div class="col-action">
+                            <a href="#"><i data-feather="trash-2"></i></a>
+                        </div>
+                    </div>
+                    <div class="subject-list-row">
+                        <input type="text" class="col-subject" value="Blockchain Technology">
+                        <input type="text" class="col-short-name" value="BT">
+                        <div class="col-availability">
+                            <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
+                        </div>
+                        <div class="col-action">
+                            <a href="#"><i data-feather="trash-2"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="faculties" class="tab-content active">
+                <div class="content-header-secondary">
+                    <h3>Staff Management</h3>
+                    <p>Manage Professors information of your department.</p>
+                </div>
+                
+                <div class="sub-header-controls">
+                    <div class="search-bar">
+                        <i data-feather="search"></i>
+                        <input type="text" placeholder="Search name">
+                    </div>
+                    <div class="header-actions">
+                         <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Show Short name</span>
+                        </div>
+                        <button class="btn-export btn-icon"><i data-feather="arrow-up-down"></i> Sort A-Z</button>
+                        <button class="btn-export btn-icon"><i data-feather="upload"></i> Bulk Import</button>
+                        <button class="btn-add-new"><i data-feather="plus"></i> Add Professor</button>
+                    </div>
+                </div>
+
+                <div class="faculty-list-container">
+                    <div class="faculty-list-row header">
+                        <span class="col-prof-name">Professor name</span>
+                        <span class="col-short-name">Short name</span>
+                        <span class="col-position">Position</span>
+                        <span class="col-action">Action</span>
+                    </div>
+                    <div class="faculty-list-row">
+                        <input type="text" class="col-prof-name" value="Neha Bhagwat">
+                        <input type="text" class="col-short-name" value="NB">
+                        <div class="col-position select-wrapper">
+                            <select>
+                                <option value="" selected>Select Position</option>
+                                <option value="prof">Professor</option>
+                                <option value="asst-prof">Asst. Professor</option>
+                            </select>
+                        </div>
+                        <div class="col-action">
+                            <a href="#"><i data-feather="trash-2"></i></a>
+                        </div>
+                    </div>
+                    <div class="faculty-list-row">
+                        <input type="text" class="col-prof-name" value="Tushar Waykole">
+                        <input type="text" class="col-short-name" value="TW">
+                        <div class="col-position select-wrapper">
+                            <select>
+                                <option value="" selected>Select Position</option>
+                                <option value="prof">Professor</option>
+                                <option value="asst-prof">Asst. Professor</option>
+                            </select>
+                        </div>
+                        <div class="col-action">
+                            <a href="#"><i data-feather="trash-2"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="rooms" class="tab-content">
+                <div class="content-header-secondary">
+                    <h3>Staff Management</h3>
+                    <p>Manage Professors information of your department.</p>
+                </div>
+                
+                <div class="sub-header-controls">
+                    <div class="search-bar">
+                        <i data-feather="search"></i>
+                        <input type="text" placeholder="Search room">
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-export btn-icon"><i data-feather="arrow-up-down"></i> Sort A-Z</button>
+                        <button class="btn-export btn-icon"><i data-feather="upload"></i> Bulk Import</button>
+                        <button class="btn-add-new"><i data-feather="plus"></i> Add Room</button>
+                    </div>
+                </div>
+
+                <div class="room-list-container">
+                    <div class="room-list-row header">
+                        <span class="col-room-num">Room number</span>
+                        <span class="col-type">Type</span>
+                        <span class="col-availability">Availability</span>
+                        <span class="col-action">Action</span>
+                    </div>
+                    <div class="room-list-row">
+                        <input type="text" class="col-room-num" value="301">
+                        <div class="col-type select-wrapper">
+                            <select>
+                                <option value="lab" selected>Lab</option>
+                                <option value="classroom">Classroom</option>
+                            </select>
+                        </div>
+                        <div class="col-availability">
+                            <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
+                        </div>
+                        <div class="col-action">
+                            <a href="#"><i data-feather="trash-2"></i></a>
+                        </div>
+                    </div>
+                    <div class="room-list-row">
+                        <input type="text" class="col-room-num" value="309">
+                        <div class="col-type select-wrapper">
+                            <select>
+                                <option value="lab">Lab</option>
+                                <option value="classroom" selected>Classroom</option>
+                            </select>
+                        </div>
+                        <div class="col-availability">
+                            <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
+                        </div>
+                        <div class="col-action">
+                            <a href="#"><i data-feather="trash-2"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/data-input.js"></script>
+     <script src="js/main.js"></script>
+</body>
+</html>

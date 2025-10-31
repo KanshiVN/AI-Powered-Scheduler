@@ -986,3 +986,520 @@ h2 {
         color: #FFFFFF; /* White icon for better contrast */
     }
 }
+
+
+
+/* --- Data Input Page - Subject Tab Styles --- */
+.sub-header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px 12px 0 0;
+}
+
+.sub-header-controls .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --- Toggle Switch Styles --- */
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.toggle-switch span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-blue);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* --- Subject List Styles --- */
+.subject-list-container {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+.subject-list-row {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1fr 0.5fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+.subject-list-row:last-child {
+    border-bottom: none;
+}
+
+.subject-list-row.header {
+    background-color: #F9FAFB;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.subject-list-row input[type="text"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+}
+
+.subject-list-row input[type="text"]:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+}
+
+.availability-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: #E6F8F0;
+    color: #0E9F6E;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+}
+.availability-tag .feather {
+    width: 14px;
+    height: 14px;
+}
+
+.col-action {
+    text-align: right;
+}
+.col-action a {
+    color: #EF4444; /* Red */
+}
+.col-action .feather {
+    width: 18px;
+    height: 18px;
+}
+
+/* --- Responsive adjustments for new list --- */
+@media (max-width: 1024px) {
+    .subject-list-row {
+        grid-template-columns: 2fr 1fr 1fr 0.5fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .sub-header-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .sub-header-controls .header-actions {
+        flex-wrap: wrap;
+    }
+
+    .subject-list-row {
+        grid-template-columns: 2fr 1fr; /* Stack columns */
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    /* Hide headers on mobile */
+    .subject-list-row.header {
+        display: none;
+    }
+
+    .subject-list-row .col-subject,
+    .subject-list-row .col-short-name,
+    .subject-list-row .col-availability {
+        grid-column: span 2;
+    }
+    
+    .subject-list-row .col-action {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2; /* Move to top right */
+        text-align: right;
+    }
+
+    .subject-list-row .col-subject {
+        font-weight: 600; /* Emphasize subject name */
+    }
+}
+
+/* --- Generate Timetable - Lessons Tab Styles --- */
+.lesson-list-container {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+.lesson-list-row {
+    display: grid;
+    /* This is the correct 5-column grid */
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 0.5fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.lesson-list-row:last-child {
+    border-bottom: none;
+}
+
+.lesson-list-row.header {
+    background-color: #F9FAFB;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.lesson-list-row .col-subject,
+.lesson-list-row .col-short-name {
+    font-weight: 500;
+}
+
+.lesson-list-row .hrs-input {
+    width: 60px;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    text-align: center;
+    font-size: 1rem;
+    font-family: var(--font-primary);
+}
+
+.lesson-list-row .hrs-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+}
+
+.lesson-list-row .col-action {
+    text-align: right;
+}
+
+.lesson-list-row .col-action a {
+    color: #EF4444;
+    /* Red */
+}
+
+.lesson-list-row .col-action .feather {
+    width: 18px;
+    height: 18px;
+}
+
+/* --- Styling for dynamically added Subject/Short Name inputs in Lessons tab --- */
+.lesson-list-row .new-subject-input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    display: block;
+}
+
+.lesson-list-row .new-subject-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+}
+
+/* Adjust column spans for mobile if inputs are used */
+@media (max-width: 768px) {
+
+    .lesson-list-row .col-subject .new-subject-input,
+    .lesson-list-row .col-short-name .new-subject-input {
+        /* On mobile, ensure these inputs also span correctly */
+        grid-column: span 2;
+    }
+}
+
+/* --- Generate Timetable - Faculty Choice Tab Styles --- */
+.search-bar {
+    position: relative;
+    width: 300px;
+}
+
+.search-bar .feather {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    width: 18px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.6rem 0.8rem 0.6rem 2.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+}
+.search-bar input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+}
+
+.faculty-choice-list-container {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+.faculty-choice-list-row {
+    display: grid;
+    /* Prof name, short name, SE, TE, BE, Action */
+    grid-template-columns: 2fr 0.8fr 1fr 1fr 1fr 0.5fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+.faculty-choice-list-row:last-child {
+    border-bottom: none;
+}
+
+.faculty-choice-list-row.header {
+    background-color: #F9FAFB;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.faculty-choice-list-row .col-prof-name {
+    font-weight: 500;
+}
+.faculty-choice-list-row .col-short-name {
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+.faculty-choice-list-row .subject-choice-input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    background-color: #F9FAFB;
+}
+.faculty-choice-list-row .subject-choice-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+    background-color: var(--card-background);
+}
+
+.faculty-choice-list-row .col-action {
+    text-align: right;
+}
+.faculty-choice-list-row .col-action a {
+    color: #EF4444; /* Red */
+}
+.faculty-choice-list-row .col-action .feather {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* --- Data Input Page - Rooms Tab Styles --- */
+.room-list-container {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+.room-list-row {
+    display: grid;
+    /* Room, Type, Availability, Action */
+    grid-template-columns: 1fr 1fr 1fr 0.5fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+.room-list-row:last-child {
+    border-bottom: none;
+}
+
+.room-list-row.header {
+    background-color: #F9FAFB;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.room-list-row input[type="text"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+}
+.room-list-row input[type="text"]:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+}
+
+/* Style for the dropdown in the list */
+.room-list-row .select-wrapper {
+    width: 100%;
+}
+.room-list-row .select-wrapper select {
+    width: 100%;
+    background-color: #F9FAFB;
+    font-size: 0.9rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+
+.room-list-row .col-action {
+    text-align: right;
+}
+.room-list-row .col-action a {
+    color: #EF4444; /* Red */
+}
+.room-list-row .col-action .feather {
+    width: 18px;
+    height: 18px;
+}
+
+/* --- Data Input Page - Faculties Tab Styles --- */
+.faculty-list-container {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+}
+
+.faculty-list-row {
+    display: grid;
+    /* Name, Short Name, Position, Action */
+    grid-template-columns: 2fr 1fr 1fr 0.5fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+.faculty-list-row:last-child {
+    border-bottom: none;
+}
+
+.faculty-list-row.header {
+    background-color: #F9FAFB;
+    color: var(--text-light);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.faculty-list-row input[type="text"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+}
+.faculty-list-row input[type="text"]:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+}
+
+/* Style for the dropdown in the list */
+.faculty-list-row .select-wrapper {
+    width: 100%;
+}
+.faculty-list-row .select-wrapper select {
+    width: 100%;
+    background-color: #F9FAFB;
+    font-size: 0.9rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+
+.faculty-list-row .col-action {
+    text-align: right;
+}
+.faculty-list-row .col-action a {
+    color: #EF4444; /* Red */
+}
+.faculty-list-row .col-action .feather {
+    width: 18px;
+    height: 18px;
+}
