@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // If userRole is not 'hod' or doesn't exist, redirect to login page
     if (userRole !== 'hod') {
         alert('Access Denied. You are not authorized to view this page.');
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
         return; // Stop further execution
     }
 
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Redirect to login page
             alert('You have been logged out.');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         });
     }
 });
