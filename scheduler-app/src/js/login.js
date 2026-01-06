@@ -37,27 +37,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Handle quick login button clicks
-    quickLoginButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const role = button.dataset.role;
-            const username = button.textContent; // Use button text as username
-
-            console.log(`Quick logging in with Role: ${role}, Username: ${username}`);
-
-            localStorage.setItem('userRole', role);
-            localStorage.setItem('username', username);
-
-            alert(`Quick login as ${username} successful! Redirecting...`);
-
-            // === THIS IS THE CORRECTED REDIRECTION LOGIC ===
-            if (role === 'hod') {
-                window.location.href = 'dashboard-hod.html';
-            } else if (role === 'faculty') {
-                window.location.href = 'faculty-dashboard.html';
-            } else if (role === 'exam_control') {
-                window.location.href = 'exam-control-dashboard.html';
-            }
-        });
-    });
 });
