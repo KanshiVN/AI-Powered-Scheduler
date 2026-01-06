@@ -15,13 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. Logout Functionality
-    const logoutBtn = document.getElementById('logout-btn');
+    const logoutBtn = document.getElementById("logout-btn");
+
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            localStorage.clear();
-            alert('You have been logged out.');
-            window.location.href = 'index.html';
+        logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            localStorage.clear(); // 👈 clear everything safely
+
+            window.location.href = "index.html";
         });
     }
+
 });

@@ -1,27 +1,59 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Authorization, Personalization, and Logout (Standard for all protected pages)
-    const userRole = localStorage.getItem('userRole');
-    if (userRole !== 'hod') {
-        alert('Access Denied. You are not authorized to view this page.');
-        window.location.href = 'index.html';
-        return;
-    }
+document.addEventListener("DOMContentLoaded", async () => {
 
-    const username = localStorage.getItem('username');
-    if (username) {
-        document.getElementById('user-name').textContent = username;
-    }
-    
-    const logoutBtn = document.getElementById('logout-btn');
+    // Logout
+    const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', (event) => {
-            event.preventDefault();
+        logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
             localStorage.clear();
-            alert('You have been logged out.');
-            window.location.href = 'index.html';
+            window.location.href = "index.html";
         });
     }
 
-    // You can add logic here in the future to handle the 'select-class' dropdown change
-    // and fetch/render the timetable data dynamically.
+    try {
+        const response = await fetch(
+            "http://localhost:5000/api/common/timetable"
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            console.warn("No timetable available");
+            return;
+        }
+
+        const fullTimetable = result.timetable;
+
+        // ✅ Pick first class for now
+        const className = Object.keys(fullTimetable)[0];
+        const classTimetable = fullTimetable[className];
+
+        const dayMap = {
+            Monday: "mon",
+            Tuesday: "tue",
+            Wednesday: "wed",
+            Thursday: "thr",
+            Friday: "fri"
+        };
+
+        const slots = ["L1", "L2", "L3", "L4", "L5", "L6"];
+
+        Object.keys(dayMap).forEach(day => {
+            const dayClass = dayMap[day];
+            const cells = document.querySelectorAll(`.lecture-slot.${dayClass}`);
+
+            slots.forEach((slot, index) => {
+                const entry = classTimetable?.[day]?.[slot];
+
+                if (cells[index]) {
+                    cells[index].innerHTML = entry
+                        ? `<strong>${entry.subject}</strong><br><small>${entry.faculty}</small>`
+                        : "-";
+                }
+            });
+        });
+
+    } catch (err) {
+        console.error("Timetable fetch failed", err);
+    }
 });

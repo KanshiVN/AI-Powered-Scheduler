@@ -1,39 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
 
-    // Handle the main login form submission
-    if (loginForm) {
-        loginForm.addEventListener('submit', (event) => {
-            event.preventDefault(); 
+    if (!loginForm) return;
 
-            const role = document.getElementById('role').value;
-            const username = document.getElementById('username').value;
-            
-            if (!role || !username) {
-                alert('Please fill in all fields.');
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const role = document.getElementById('role').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if (!role || !username || !password) {
+            alert('Please fill in all fields.');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    role,
+                    username,
+                    password
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                alert(result.message || 'Login failed');
                 return;
             }
 
-            console.log(`Logging in with Role: ${role}, Username: ${username}`);
-            localStorage.setItem('userRole', role);
-            localStorage.setItem('username', username);
+            // Store session info (temporary)
+            localStorage.setItem('userRole', result.role);
+            localStorage.setItem('username', result.username);
 
-            alert('Login successful! Redirecting...');
-
-            // === ROLE-BASED REDIRECTION LOGIC (This part is correct) ===
-            if (role === 'hod') {
-                window.location.href = 'dashboard-hod.html'; // HOD dashboard
-            } else if (role === 'faculty') {
-                window.location.href = 'faculty-dashboard.html'; // Faculty dashboard
-            } else if (role === 'exam_control') {
-                window.location.href = 'exam-control-dashboard.html'; // Exam Control dashboard
+            // Role-based redirection
+            if (result.role === 'hod') {
+                window.location.href = 'dashboard-hod.html';
+            } else if (result.role === 'faculty') {
+                window.location.href = 'faculty-dashboard.html';
+            } else if (result.role === 'exam_control') {
+                window.location.href = 'exam-control-dashboard.html';
             } else {
-                // Fallback for other roles
-                alert('A dashboard for this role is not yet available.');
+                alert('No dashboard available for this role.');
                 localStorage.clear();
-                window.location.href = 'index.html'; // Back to login page
             }
-        });
-    }
 
+        } catch (error) {
+            console.error(error);
+            alert('Backend server not reachable');
+        }
+    });
 });
