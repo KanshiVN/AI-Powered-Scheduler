@@ -188,3 +188,48 @@ function setupFacultyDeleteListener() {
         }
     });
 }
+
+// --- SAVE DATA BUTTON LOGIC ---
+
+const saveDataBtn = document.getElementById('save-data-btn');
+
+if (saveDataBtn) {
+    saveDataBtn.addEventListener('click', async () => {
+
+        // 1. Collect Subjects
+        const subjects = [];
+        document.querySelectorAll('.subject-list-row:not(.header)').forEach(row => {
+            subjects.push({
+                name: row.querySelector('.col-subject').value,
+                shortName: row.querySelector('.col-short-name').value
+            });
+        });
+
+        // 2. Collect Faculties
+        const faculties = [];
+        document.querySelectorAll('.faculty-list-row:not(.header)').forEach(row => {
+            faculties.push({
+                name: row.querySelector('.col-prof-name').value,
+                shortName: row.querySelector('.col-short-name').value
+            });
+        });
+
+        // 3. Collect Rooms
+        const rooms = [];
+        document.querySelectorAll('.room-list-row:not(.header)').forEach(row => {
+            rooms.push({
+                roomNo: row.querySelector('.col-room-num').value,
+                type: row.querySelector('select').value
+            });
+        });
+
+        const payload = { subjects, faculties, rooms };
+
+        console.log("Sending data to backend:", payload);
+
+        // Later this will be:
+        // await fetch('/api/data-input', { method:'POST', body: JSON.stringify(payload) });
+
+        alert("Data collected successfully (backend integration next)");
+    });
+}

@@ -183,3 +183,61 @@ function setupFacultyDeleteListener() {
         }
     });
 }
+
+
+// --- TIMETABLE GENERATION LOGIC ---
+const generateBtn = document.getElementById('generate-btn');
+
+if (generateBtn) {
+    generateBtn.addEventListener('click', async () => {
+
+        // 1. General Settings
+        const lecturesPerDay = document.getElementById('lectures-count').value;
+
+        // 2. Time Slots
+        const timeSlots = [];
+        document.querySelectorAll('.lecture-row').forEach(row => {
+            const times = row.querySelectorAll('input[type="time"]');
+            timeSlots.push({
+                start: times[0].value,
+                end: times[1].value
+            });
+        });
+
+        // 3. Lessons
+        const lessons = [];
+        document.querySelectorAll('.lesson-list-row:not(.header)').forEach(row => {
+            lessons.push({
+                subject: row.querySelector('.col-subject')?.textContent || "",
+                hours: row.querySelector('.hrs-input')?.value
+            });
+        });
+
+        // 4. Faculty Preferences
+        const facultyChoices = [];
+        document.querySelectorAll('.faculty-choice-list-row:not(.header)').forEach(row => {
+            facultyChoices.push({
+                faculty: row.querySelector('.col-prof-name')?.textContent,
+                preferences: [
+                    row.querySelector('.col-se input')?.value,
+                    row.querySelector('.col-te input')?.value,
+                    row.querySelector('.col-be input')?.value
+                ]
+            });
+        });
+
+        const payload = {
+            lecturesPerDay,
+            timeSlots,
+            lessons,
+            facultyChoices
+        };
+
+        console.log("Timetable input:", payload);
+
+        // Later:
+        // const res = await fetch('/api/generate-timetable', {...})
+
+        alert("Timetable generation request sent (AI logic next)");
+    });
+}

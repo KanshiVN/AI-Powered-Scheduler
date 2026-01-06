@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
-    const quickLoginButtons = document.querySelectorAll('.quick-login-buttons .btn');
 
     // Handle the main login form submission
     if (loginForm) {

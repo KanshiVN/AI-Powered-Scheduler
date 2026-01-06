@@ -1503,3 +1503,55 @@ input:checked + .slider:before {
     width: 18px;
     height: 18px;
 }
+
+
+/* Buttons  */
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-actions .btn {
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    width: auto;
+}
+/* Buttons  */
+
+
+
+/* --- User Preferences Page Styles --- */
+.preference-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 2.5rem;
+    max-width: 520px;
+    margin-top: 2rem;
+}
+
+.pref-group {
+    margin-bottom: 1.8rem;
+}
+
+.pref-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.pref-group select {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.pref-group select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
