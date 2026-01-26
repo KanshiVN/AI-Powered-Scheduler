@@ -70,9 +70,7 @@
                                 <span class="list-col-main">Classes</span>
                                 <span>Action</span>
                             </div>
-                            <div class="list-row"><span class="list-col-main">BE A</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
-                            <div class="list-row"><span class="list-col-main">BE B</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
-                            <div class="list-row"><span class="list-col-main">TE A</span><div class="action-icons"><a href="#"><i data-feather="edit-2"></i></a><a href="#"><i data-feather="trash-2"></i></a></div></div>
+                            <!-- Classes will be loaded dynamically -->
                         </div>
                     </div>
                     <div class="uploader-container">
@@ -94,9 +92,8 @@
                 <div class="sub-header-controls">
                     <div class="select-wrapper">
                         <select id="select-class-subject">
-                            <option value="be">BE</option>
-                            <option value="te">TE</option>
-                            <option value="se">SE</option>
+                            <option value="" disabled selected>Select Class</option>
+                            <!-- Class options will be loaded dynamically -->
                         </select>
                     </div>
                     <div class="header-actions">
@@ -120,26 +117,7 @@
                         <span class="col-availability">Availability</span>
                         <span class="col-action">Action</span>
                     </div>
-                    <div class="subject-list-row">
-                        <input type="text" class="col-subject" value="Machine learning">
-                        <input type="text" class="col-short-name" value="ML">
-                        <div class="col-availability">
-                            <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
-                        </div>
-                        <div class="col-action">
-                            <a href="#"><i data-feather="trash-2"></i></a>
-                        </div>
-                    </div>
-                    <div class="subject-list-row">
-                        <input type="text" class="col-subject" value="Blockchain Technology">
-                        <input type="text" class="col-short-name" value="BT">
-                        <div class="col-availability">
-                            <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
-                        </div>
-                        <div class="col-action">
-                            <a href="#"><i data-feather="trash-2"></i></a>
-                        </div>
-                    </div>
+                    <!-- Subjects will be loaded dynamically -->
                 </div>
             </div>
 
@@ -175,34 +153,7 @@
                         <span class="col-position">Position</span>
                         <span class="col-action">Action</span>
                     </div>
-                    <div class="faculty-list-row">
-                        <input type="text" class="col-prof-name" value="Neha Bhagwat">
-                        <input type="text" class="col-short-name" value="NB">
-                        <div class="col-position select-wrapper">
-                            <select>
-                                <option value="" selected>Select Position</option>
-                                <option value="prof">Professor</option>
-                                <option value="asst-prof">Asst. Professor</option>
-                            </select>
-                        </div>
-                        <div class="col-action">
-                            <a href="#"><i data-feather="trash-2"></i></a>
-                        </div>
-                    </div>
-                    <div class="faculty-list-row">
-                        <input type="text" class="col-prof-name" value="Tushar Waykole">
-                        <input type="text" class="col-short-name" value="TW">
-                        <div class="col-position select-wrapper">
-                            <select>
-                                <option value="" selected>Select Position</option>
-                                <option value="prof">Professor</option>
-                                <option value="asst-prof">Asst. Professor</option>
-                            </select>
-                        </div>
-                        <div class="col-action">
-                            <a href="#"><i data-feather="trash-2"></i></a>
-                        </div>
-                    </div>
+                    <!-- Faculties will be loaded dynamically -->
                 </div>
             </div>
 
@@ -231,36 +182,7 @@
                         <span class="col-availability">Availability</span>
                         <span class="col-action">Action</span>
                     </div>
-                    <div class="room-list-row">
-                        <input type="text" class="col-room-num" value="301">
-                        <div class="col-type select-wrapper">
-                            <select>
-                                <option value="lab" selected>Lab</option>
-                                <option value="classroom">Classroom</option>
-                            </select>
-                        </div>
-                        <div class="col-availability">
-                            <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
-                        </div>
-                        <div class="col-action">
-                            <a href="#"><i data-feather="trash-2"></i></a>
-                        </div>
-                    </div>
-                    <div class="room-list-row">
-                        <input type="text" class="col-room-num" value="309">
-                        <div class="col-type select-wrapper">
-                            <select>
-                                <option value="lab">Lab</option>
-                                <option value="classroom" selected>Classroom</option>
-                            </select>
-                        </div>
-                        <div class="col-availability">
-                            <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
-                        </div>
-                        <div class="col-action">
-                            <a href="#"><i data-feather="trash-2"></i></a>
-                        </div>
-                    </div>
+                    <!-- Rooms will be loaded dynamically -->
                 </div>
             </div>
             <!-- Submit button -->

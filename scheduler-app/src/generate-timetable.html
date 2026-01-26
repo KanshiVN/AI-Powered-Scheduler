@@ -73,6 +73,11 @@
                         <div class="settings-card-body" id="lecture-rows-container">
                             </div>
                     </div>
+                    <div class="form-actions" style="margin-top: 2rem;">
+                        <button id="save-general-settings-btn" class="btn btn-primary">
+                            <i data-feather="save"></i> Save Settings
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -85,9 +90,8 @@
                     <div class="sub-header-controls">
                         <div class="select-wrapper">
                             <select id="select-class-lesson">
-                                <option value="be">BE</option>
-                                <option value="te">TE</option>
-                                <option value="se">SE</option>
+                                <option value="" disabled selected>Select Class</option>
+                                <!-- Class options will be loaded dynamically -->
                             </select>
                         </div>
                         <div class="header-actions">
@@ -112,6 +116,11 @@
                             <span class="col-action">Action</span>
                         </div>
                         </div>
+                    <div class="form-actions" style="margin-top: 2rem;">
+                        <button id="save-lessons-btn" class="btn btn-primary">
+                            <i data-feather="save"></i> Save Lessons
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -145,79 +154,37 @@
                         <div class="faculty-choice-list-row header">
                             <span class="col-prof-name">Professor name</span>
                             <span class="col-short-name">Short name</span>
-                            <span class="col-se">SE</span>
-                            <span class="col-te">TE</span>
-                            <span class="col-be">BE</span>
+                            <!-- Class columns will be loaded dynamically -->
                             <span class="col-action">Action</span>
                         </div>
-
-                        <div class="faculty-choice-list-row">
-                            <span class="col-prof-name">Neha Bhagwat</span>
-                            <span class="col-short-name">NB</span>
-                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
-                        </div>
-                        <div class="faculty-choice-list-row">
-                            <span class="col-prof-name">Saurabh Saoji</span>
-                            <span class="col-short-name">SS</span>
-                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
-                        </div>
-                        <div class="faculty-choice-list-row">
-                            <span class="col-prof-name">Pritam Ahire</span>
-                            <span class="col-short-name">PA</span>
-                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
-                        </div>
-                        <div class="faculty-choice-list-row">
-                            <span class="col-prof-name">Renuka Kajale</span>
-                            <span class="col-short-name">RK</span>
-                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
-                        </div>
-                        <div class="faculty-choice-list-row">
-                            <span class="col-prof-name">Vaishali Dhawas</span>
-                            <span class="col-short-name">VD</span>
-                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
-                        </div>
-                        <div class="faculty-choice-list-row">
-                            <span class="col-prof-name">Nilesh Kamble</span>
-                            <span class="col-short-name">NK</span>
-                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
-                        </div>
-                        <div class="faculty-choice-list-row">
-                            <span class="col-prof-name">Tushar Waykole</span>
-                            <span class="col-short-name">TW</span>
-                            <div class="col-se"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-te"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-be"><input type="text" class="subject-choice-input" placeholder="Subject"></div>
-                            <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
-                        </div>
+                        <!-- Faculty rows will be loaded dynamically -->
+                    </div>
+                    <div class="form-actions" style="margin-top: 2rem;">
+                        <button id="save-faculty-choice-btn" class="btn btn-primary">
+                            <i data-feather="save"></i> Save Faculty Choices
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div id="review-generate" class="tab-content"></div>
-
-            <div class="form-actions">
-                <button id="generateTimetableBtn" class="btn primary-btn">
-                    Generate Timetable
-                </button>
-
+            <div id="review-generate" class="tab-content">
+                <div class="generator-content">
+                    <div class="content-header-secondary">
+                        <h3>Review & Generate</h3>
+                        <p>Review your configuration before generating the timetable</p>
+                    </div>
+                    <div id="review-content" class="review-container">
+                        <!-- Review content will be loaded dynamically -->
+                        <p style="text-align: center; color: #666; padding: 2rem;">
+                            Please complete all previous steps and save your configuration to review.
+                        </p>
+                    </div>
+                    <div class="form-actions" style="margin-top: 2rem;">
+                        <button id="generateTimetableBtn" class="btn primary-btn" style="display: none;">
+                            <i data-feather="zap"></i> Generate Timetable
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </main>

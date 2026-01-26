@@ -35,9 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Store session info (temporary)
-            localStorage.setItem('userRole', result.role);
-            localStorage.setItem('username', result.username);
+            // Store JWT token and user info
+            if (result.token) {
+                localStorage.setItem('authToken', result.token);
+                localStorage.setItem('userRole', result.role);
+                localStorage.setItem('username', result.username);
+                localStorage.setItem('userId', result.user_id);
+            } else {
+                // Fallback for old system (shouldn't happen with new auth)
+                localStorage.setItem('userRole', result.role);
+                localStorage.setItem('username', result.username);
+            }
 
             // Role-based redirection
             if (result.role === 'hod') {

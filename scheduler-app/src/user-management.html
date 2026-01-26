@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - AI Powered Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="user-avatar"><i data-feather="user"></i></div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">HOD</span>
+                        <span class="user-role">HOD, Computer Engineering</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard-hod.html"><i data-feather="home"></i><span>Dashboard</span></a></li>
+                    <li><a href="data-input.html"><i data-feather="database"></i><span>Data Input</span></a></li>
+                    <li><a href="generate-timetable.html"><i data-feather="grid"></i><span>Generate Timetable</span></a></li>
+                    <li><a href="view-timetable.html"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="exams.html"><i data-feather="edit-3"></i><span>Exams</span></a></li>
+                    <li><a href="user-management.html" class="active"><i data-feather="user-plus"></i><span>User Management</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" id="logout-btn" class="logout-link"><i data-feather="log-out"></i><span>Logout</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <button class="menu-toggle" id="menu-toggle-btn">
+                <i data-feather="menu"></i>
+            </button>
+            <header class="content-header">
+                <h1>User Management</h1>
+                <p>Create and manage user accounts for faculty and exam control staff</p>
+            </header>
+
+            <!-- Create User Form -->
+            <div class="user-form-container" style="background: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div class="content-header-secondary">
+                    <h3>Create New User</h3>
+                    <p>Add a new faculty member or exam control staff</p>
+                </div>
+                
+                <form id="create-user-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" name="username" required placeholder="Enter username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required placeholder="Enter password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Role *</label>
+                        <select id="role" name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="faculty">Faculty</option>
+                            <option value="exam_control">Exam Control</option>
+                            <option value="hod">HOD</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email (Optional)</label>
+                        <input type="email" id="email" name="email" placeholder="user@example.com">
+                    </div>
+                    
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <button type="submit" class="btn btn-primary" style="width: auto; padding: 0.75rem 2rem;">
+                            <i data-feather="user-plus"></i> Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Users List -->
+            <div class="users-list-container" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <div class="content-header-secondary" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div>
+                        <h3>All Users</h3>
+                        <p>Manage existing user accounts</p>
+                    </div>
+                    <button id="refresh-users-btn" class="btn-export">
+                        <i data-feather="refresh-cw"></i> Refresh
+                    </button>
+                </div>
+                
+                <div class="user-list-table">
+                    <div class="user-list-row header">
+                        <span class="col-id">ID</span>
+                        <span class="col-username">Username</span>
+                        <span class="col-role">Role</span>
+                        <span class="col-email">Email</span>
+                        <span class="col-created">Created</span>
+                        <span class="col-action">Action</span>
+                    </div>
+                    <div id="users-list-body">
+                        <!-- Users will be loaded dynamically -->
+                        <div style="text-align: center; padding: 2rem; color: #666;">
+                            Loading users...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        feather.replace();
+    </script>
+    <script src="js/user-management.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
