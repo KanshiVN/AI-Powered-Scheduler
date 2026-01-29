@@ -60,11 +60,29 @@ def save_rooms(rooms):
         return True
 
 
+def _union_subjects_from_by_class(subjects_by_class):
+    """Build a deduplicated list of all subjects from subjects_by_class (for CSP/Generate)."""
+    seen = set()
+    out = []
+    for lst in (subjects_by_class or {}).values():
+        for s in lst or []:
+            n = (s.get("name") or "").strip()
+            if n and n not in seen:
+                seen.add(n)
+                out.append({"name": n, "short": (s.get("short") or "").strip()})
+    return out
+
+
 def get_all_data():
     if USE_SUPABASE and STORE:
         return STORE.get_all_data()
-    else:
-        return DATA_STORE
+    # In-memory: build subjects and subjects_by_class from timetable_config
+    cfg = DATA_STORE.get("timetable_config") or {}
+    sb = cfg.get("subjects_by_class") or {}
+    result = dict(DATA_STORE)
+    result["subjects"] = _union_subjects_from_by_class(sb)
+    result["subjects_by_class"] = sb
+    return result
 
 
 def save_timetable_config(config):
@@ -80,9 +98,39 @@ def get_timetable_config():
     """Get timetable configuration"""
     if USE_SUPABASE and STORE:
         return STORE.get_timetable_config()
+    cfg = DATA_STORE.get("timetable_config") or {}
+    if "subjects_by_class" not in cfg:
+        cfg = dict(cfg)
+        cfg["subjects_by_class"] = {}
+    return cfg
+
+
+# ==================== BATCH MANAGEMENT ====================
+
+def save_batches(class_name, batch_count):
+    """Save batches for a class with full class name as prefix"""
+    if USE_SUPABASE and STORE:
+        return STORE.save_batches(class_name, batch_count)
     else:
-        return DATA_STORE.get("timetable_config", {
-            "lectures_per_day": 6,
-            "lesson_hours": {},
-            "faculty_choices": {}
-        })
+        # In-memory: generate batch names with full class name
+        batches = [f"{class_name}{i+1}" for i in range(batch_count)]
+        DATA_STORE["batches"][class_name] = batches
+        return True
+
+
+def get_batches(class_name=None):
+    """Get batches for a specific class or all batches"""
+    if USE_SUPABASE and STORE:
+        return STORE.get_batches(class_name)
+    else:
+        if class_name:
+            return DATA_STORE["batches"].get(class_name, [])
+        return DATA_STORE["batches"]
+
+
+def get_batches_by_class():
+    """Get batches grouped by class"""
+    if USE_SUPABASE and STORE:
+        return STORE.get_all_batches_with_classes()
+    else:
+        return DATA_STORE["batches"]

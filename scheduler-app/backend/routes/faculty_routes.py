@@ -8,7 +8,25 @@ faculty_bp = Blueprint("faculty", __name__)
 @faculty_bp.route("/timetable", methods=["GET"])
 @role_required("faculty")
 def get_faculty_timetable():
-    faculty_name = request.headers.get("X-Username")
+    """
+    Return timetable filtered for the currently logged-in faculty.
+    Priority:
+      1) X-Username header (explicit override)
+      2) Username from JWT (request.current_user)
+    """
+    faculty_name = (request.headers.get("X-Username") or "").strip()
+
+    # Fallback to JWT username if header not provided
+    if not faculty_name:
+        user = getattr(request, "current_user", None)
+        if user:
+            faculty_name = (user.get("username") or "").strip()
+
+    if not faculty_name:
+        return jsonify({
+            "success": False,
+            "message": "Faculty identity not provided"
+        }), 400
 
     timetable = get_timetable()
 
@@ -26,7 +44,7 @@ def get_faculty_timetable():
                 if entry and entry.get("faculty", "").lower() == faculty_name.lower():
                     faculty_view.setdefault(day, {})
                     faculty_view[day][slot] = {
-                        "subject": entry["subject"],
+                        "subject": entry.get("subject", ""),
                         "class": class_name
                     }
 

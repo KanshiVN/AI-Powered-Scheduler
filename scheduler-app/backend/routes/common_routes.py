@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from services.timetable_service import get_timetable
+from services.data_service import get_timetable_config
 from scheduler.utils import validate_timetable, get_faculty_timetable
 
 common_bp = Blueprint("common", __name__)
@@ -79,3 +80,15 @@ def get_faculty_schedule(faculty_name):
         "faculty": faculty_name,
         "timetable": faculty_timetable
     })
+
+
+@common_bp.route("/timetable/config", methods=["GET"])
+def get_config():
+    """Get timetable configuration (publicly accessible for grid rendering)"""
+    config = get_timetable_config()
+    
+    return jsonify({
+        "success": True,
+        "config": config
+    })
+

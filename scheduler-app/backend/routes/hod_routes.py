@@ -23,12 +23,14 @@ from services.timetable_service import run_scheduler
 
 from services.data_service import (
     save_classes,
-    save_subjects,
     save_faculties,
     save_rooms,
     get_all_data,
     save_timetable_config,
-    get_timetable_config
+    get_timetable_config,
+    save_batches,
+    get_batches_by_class,
+    save_subjects
 )
 
 hod_bp = Blueprint("hod", __name__)
@@ -37,16 +39,19 @@ hod_bp = Blueprint("hod", __name__)
 @hod_bp.route("/get-data", methods=["GET"])
 @role_required("hod")
 def get_hod_data():
-    """Fetch all saved data (classes, subjects, faculties, rooms)"""
+    """Fetch all saved data (classes, subjects, faculties, rooms, subjects_by_class, batches)"""
     data = get_all_data()
-    
+    batches_by_class = get_batches_by_class()
+
     return jsonify({
         "success": True,
         "data": {
             "classes": data.get("classes", []),
             "subjects": data.get("subjects", []),
+            "subjects_by_class": data.get("subjects_by_class", {}),
             "faculties": data.get("faculties", []),
-            "rooms": data.get("rooms", [])
+            "rooms": data.get("rooms", []),
+            "batches": batches_by_class
         }
     })
 
@@ -54,12 +59,17 @@ def get_hod_data():
 @hod_bp.route("/save-data", methods=["POST"])
 @role_required("hod")
 def save_hod_data():
+    """Save classes, faculties, rooms, and batches."""
     data = request.get_json()
 
     save_classes(data.get("classes", []))
-    save_subjects(data.get("subjects", []))
     save_faculties(data.get("faculties", []))
     save_rooms(data.get("rooms", []))
+    
+    # Save batches for each class (batch names auto-generated with class prefix)
+    batches_data = data.get("batches", {})  # {"FEA": 3, "SEA": 2}
+    for class_name, batch_count in batches_data.items():
+        save_batches(class_name, int(batch_count) if batch_count else 0)
 
     return jsonify({
         "success": True,
@@ -72,13 +82,49 @@ def save_hod_data():
 def save_timetable_config_api():
     """Save timetable configuration (settings, lessons, faculty choices)"""
     data = request.get_json()
-    
+
     save_timetable_config(data)
-    
+
     return jsonify({
         "success": True,
         "message": "Timetable configuration saved successfully"
     })
+
+
+@hod_bp.route("/save-subjects-for-class", methods=["POST"])
+@role_required("hod")
+def save_subjects_for_class():
+    """Save subjects for a single class with type and duration. Saves to both subjects table and JSONB."""
+    data = request.get_json()
+    class_name = (data.get("class_name") or "").strip()
+    subjects = data.get("subjects")
+    if not class_name:
+        return jsonify({"success": False, "message": "class_name is required"}), 400
+    if not isinstance(subjects, list):
+        return jsonify({"success": False, "message": "subjects must be an array"}), 400
+
+    # Prepare subjects with type and duration_slots
+    formatted_subjects = [
+        {
+            "name": (s.get("name") or "").strip(),
+            "short": (s.get("short") or "").strip(),
+            "type": s.get("type", "lecture"),
+            "duration_slots": s.get("duration_slots", 1)
+        }
+        for s in subjects if (s.get("name") or "").strip()
+    ]
+
+    # 1. Save to subjects table (for database storage with type/duration)
+    save_subjects(formatted_subjects)
+
+    # 2. Save to timetable_config.subjects_by_class (for scheduler usage)
+    config = get_timetable_config()
+    sb = config.get("subjects_by_class") or {}
+    sb[class_name] = formatted_subjects
+    config["subjects_by_class"] = sb
+    save_timetable_config(config)
+
+    return jsonify({"success": True, "message": "Subjects saved for class"})
 
 
 @hod_bp.route("/get-timetable-config", methods=["GET"])

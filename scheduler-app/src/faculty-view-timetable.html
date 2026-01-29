@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body class="dashboard-body">
 
     <div class="dashboard-container">
@@ -25,10 +27,12 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li><a href="faculty-dashboard.html"><i data-feather="home"></i><span>Dashboard</span></a></li>
-                    <li><a href="faculty-view-timetable.html" class="active"><i data-feather="calendar"></i><span>View Timetable</span></a></li>
+                    <li><a href="faculty-view-timetable.html" class="active"><i data-feather="calendar"></i><span>View
+                                Timetable</span></a></li>
                     <li><a href="faculty-exams.html"><i data-feather="edit-3"></i><span>Exams</span></a></li>
                     <li><a href="#"><i data-feather="users"></i><span>Meetings</span></a></li>
-                    <li><a href="faculty-subject-preference.html"><i data-feather="book"></i><span>Subject Preference</span></a></li>
+                    <li><a href="faculty-subject-preference.html"><i data-feather="book"></i><span>Subject
+                                Preference</span></a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -37,9 +41,9 @@
         </aside>
 
         <main class="main-content">
-                <button class="menu-toggle" id="menu-toggle-btn">
-                        <i data-feather="menu"></i>
-                </button>
+            <button class="menu-toggle" id="menu-toggle-btn">
+                <i data-feather="menu"></i>
+            </button>
             <header class="content-header">
                 <h1>Timetable Viewer</h1>
                 <p>View and analyze timetable schedules</p>
@@ -48,10 +52,22 @@
             <div class="stepper-container">
                 <div class="step active">Class View</div>
                 <div class="step">Personal Schedule</div>
-
             </div>
-            
-            <div class="viewer-content">
+
+            <!-- Class selector for Class View -->
+            <div class="viewer-header" style="display: flex; align-items: center; gap: 1rem; margin: 1rem 0;">
+                <div class="content-header-secondary">
+                    <h3>Select Class</h3>
+                </div>
+                <div class="select-wrapper">
+                    <select id="select-class-view">
+                        <option value="" disabled selected>Select Class</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- CLASS VIEW: Shows full class timetable with all faculties -->
+            <div class="viewer-content class-view">
                 <div class="viewer-header">
                     <div class="content-header-secondary">
                         <h3>Class View</h3>
@@ -60,51 +76,30 @@
                 </div>
 
                 <div class="viewer-card-body" style="padding: 2rem 0;">
-                    <div class="timetable-grid">
-                        <div class="grid-cell grid-header"></div>
-                        <div class="grid-cell grid-header">8.30 - 9.30</div>
-                        <div class="grid-cell grid-header">9.30 - 10.30</div>
-                        <div class="grid-cell break-cell"><i data-feather="scissors"></i></div>
-                        <div class="grid-cell grid-header">10.45 - 11.45</div>
-                        <div class="grid-cell grid-header">11.45 - 12.45</div>
-                        <div class="grid-cell break-cell"><i data-feather="scissors"></i></div>
-                        <div class="grid-cell grid-header">1.30 - 2.30</div>
-                        <div class="grid-cell grid-header">2.30 - 3.30</div>
-                        
-                        <div class="grid-cell day-header">MON</div>
-                        <div class="grid-cell lecture-slot mon"></div><div class="grid-cell lecture-slot mon"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot mon"></div><div class="grid-cell lecture-slot mon"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot mon"></div><div class="grid-cell lecture-slot mon"></div>
-                        
-                        <div class="grid-cell day-header">TUE</div>
-                        <div class="grid-cell lecture-slot tue"></div><div class="grid-cell lecture-slot tue"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot tue"></div><div class="grid-cell lecture-slot tue"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot tue"></div><div class="grid-cell lecture-slot tue"></div>
-                        
-                        <div class="grid-cell day-header">WED</div>
-                        <div class="grid-cell lecture-slot wed"></div><div class="grid-cell lecture-slot wed"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot wed"></div><div class="grid-cell lecture-slot wed"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot wed"></div><div class="grid-cell lecture-slot wed"></div>
-                       
-                        <div class="grid-cell day-header">THR</div>
-                        <div class="grid-cell lecture-slot thr"></div><div class="grid-cell lecture-slot thr"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot thr"></div><div class="grid-cell lecture-slot thr"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot thr"></div><div class="grid-cell lecture-slot thr"></div>
+                    <div class="timetable-grid" id="class-view-grid">
+                        <!-- Grid will be populated dynamically via faculty-view-timetable.js based on time settings -->
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #666;">
+                            Loading timetable structure...
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="grid-cell day-header">FRI</div>
-                        <div class="grid-cell lecture-slot fri"></div><div class="grid-cell lecture-slot fri"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot fri"></div><div class="grid-cell lecture-slot fri"></div>
-                        <div class="grid-cell break-cell"></div>
-                        <div class="grid-cell lecture-slot fri"></div><div class="grid-cell lecture-slot fri"></div>
+            <!-- PERSONAL VIEW: Shows only this faculty's schedule -->
+            <div class="viewer-content personal-view" style="display: none;">
+                <div class="viewer-header">
+                    <div class="content-header-secondary">
+                        <h3>Personal Schedule</h3>
+                    </div>
+                    <button class="btn-export"><i data-feather="share"></i> Export</button>
+                </div>
+
+                <div class="viewer-card-body" style="padding: 2rem 0;">
+                    <div class="timetable-grid" id="personal-view-grid">
+                        <!-- Grid will be populated dynamically via faculty-view-timetable.js based on time settings -->
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #666;">
+                            Loading timetable structure...
+                        </div>
                     </div>
                 </div>
             </div>
@@ -117,6 +112,7 @@
         feather.replace();
     </script>
     <script src="js/faculty-view-timetable.js"></script>
-     <script src="js/main.js"></script>
+    <script src="js/main.js"></script>
 </body>
+
 </html>

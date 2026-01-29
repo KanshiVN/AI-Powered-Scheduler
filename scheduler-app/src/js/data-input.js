@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (userRole !== 'hod') {
         alert('Access Denied. You are not authorized to view this page.');
         window.location.href = 'index.html';
-        return; 
+        return;
     }
 
     // 2. Personalization
@@ -52,10 +52,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupSubjectAddButton();
     setupSubjectDeleteListener();
 
+    // 7b. When class changes in Subject tab, load that class's subjects only
+    const subjectClassSelector = document.getElementById('select-class-subject');
+    if (subjectClassSelector) {
+        subjectClassSelector.addEventListener('change', () => {
+            const v = subjectClassSelector.value;
+            loadSubjects(cachedSubjectsByClass[v] || []);
+        });
+    }
+
     // 8. Setup for Rooms Tab
     setupRoomAddButton();
     setupRoomDeleteListener();
-    
+
     // 9. Setup for Faculties Tab
     setupFacultyAddButton();
     setupFacultyDeleteListener();
@@ -63,6 +72,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 // --- LOAD SAVED DATA FROM BACKEND ---
+// Store batches: {className: batchCount}
+let cachedBatches = {};
+
 async function loadSavedData() {
     try {
         const response = await fetch(
@@ -80,20 +92,26 @@ async function loadSavedData() {
 
         const result = await response.json();
         if (result.success && result.data) {
-            // Load classes
+            cachedSubjectsByClass = result.data.subjects_by_class || {};
+
+            // Load batches data
+            const batchesByClass = result.data.batches || {};
+            cachedBatches = {};
+            for (const className in batchesByClass) {
+                cachedBatches[className] = batchesByClass[className].length;
+            }
+
             loadClasses(result.data.classes || []);
-            
-            // Load subjects
-            loadSubjects(result.data.subjects || []);
-            
-            // Load faculties
             loadFaculties(result.data.faculties || []);
-            
-            // Load rooms
             loadRooms(result.data.rooms || []);
-            
-            // Update class selector dropdowns
             updateClassSelectors(result.data.classes || []);
+
+            // Load subjects for the currently selected class (or empty if none)
+            const sel = document.getElementById('select-class-subject');
+            const selectedClass = sel?.value || '';
+            if (selectedClass) {
+                loadSubjects(cachedSubjectsByClass[selectedClass] || []);
+            }
         }
     } catch (error) {
         console.error("Error loading saved data:", error);
@@ -112,19 +130,26 @@ function loadClasses(classes) {
         container.appendChild(header);
     }
 
-    // Add classes dynamically
+    // Add classes dynamically with batch information
     classes.forEach(className => {
+        const batchCount = cachedBatches[className] || 0;
+        // Use full class name for batches: SEA → SEA1, SEA2
+        const batchNames = Array.from({ length: batchCount }, (_, i) => `${className}${i + 1}`).join(', ');
+
         const rowHTML = `
             <div class="list-row">
-                <span class="list-col-main">${className}</span>
+                <div class="list-col-main">
+                    <span class="class-name">${className}</span>
+                    ${batchCount > 0 ? `<span class="batch-info" style="font-size: 0.85em; color: #666; margin-left: 8px;">Batches: ${batchNames}</span>` : ''}
+                </div>
                 <div class="action-icons">
-                    <a href="#" class="edit-class"><i data-feather="edit-2"></i></a>
-                    <a href="#" class="delete-class"><i data-feather="trash-2"></i></a>
+                    <a href="#" class="edit-class" title="Edit Class"><i data-feather="edit-2"></i></a>
+                    <a href="#" class="delete-class" title="Delete Class"><i data-feather="trash-2"></i></a>
                 </div>
             </div>`;
         container.insertAdjacentHTML('beforeend', rowHTML);
     });
-    
+
     feather.replace();
 }
 
@@ -140,12 +165,24 @@ function loadSubjects(subjects) {
         container.appendChild(header);
     }
 
-    // Add subjects dynamically
     subjects.forEach(subject => {
+        const n = String(subject.name || '').replace(/"/g, '&quot;');
+        const s = String(subject.short || '').replace(/"/g, '&quot;');
+        const type = subject.type || 'lecture';
+        const duration = subject.duration_slots || 1;
+
         const rowHTML = `
             <div class="subject-list-row">
-                <input type="text" class="col-subject" value="${subject.name || ''}" placeholder="Subject Name">
-                <input type="text" class="col-short-name" value="${subject.short || ''}" placeholder="Short Name (e.g., ML)">
+                <input type="text" class="col-subject subject-name-input" value="${n}" placeholder="Subject Name">
+                <input type="text" class="col-short-name" value="${s}" placeholder="Short Name (e.g., ML)">
+                <div class="col-type select-wrapper">
+                    <select class="subject-type-select">
+                        <option value="lecture" ${type === 'lecture' ? 'selected' : ''}>Lecture</option>
+                        <option value="lab" ${type === 'lab' ? 'selected' : ''}>Lab</option>
+                        <option value="project" ${type === 'project' ? 'selected' : ''}>Project</option>
+                    </select>
+                </div>
+                <input type="number" class="col-duration duration-input" value="${duration}" min="1" max="4" placeholder="1">
                 <div class="col-availability">
                     <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
                 </div>
@@ -155,7 +192,12 @@ function loadSubjects(subjects) {
             </div>`;
         container.insertAdjacentHTML('beforeend', rowHTML);
     });
-    
+
+    // Add auto-detection event listeners to all subject name inputs
+    container.querySelectorAll('.subject-name-input').forEach(input => {
+        input.addEventListener('input', handleSubjectNameChange);
+    });
+
     feather.replace();
 }
 
@@ -190,7 +232,7 @@ function loadFaculties(faculties) {
             </div>`;
         container.insertAdjacentHTML('beforeend', rowHTML);
     });
-    
+
     feather.replace();
 }
 
@@ -227,26 +269,73 @@ function loadRooms(rooms) {
             </div>`;
         container.insertAdjacentHTML('beforeend', rowHTML);
     });
-    
+
     feather.replace();
+}
+
+// Per-class subjects cache (class name -> [{name, short, type, duration_slots}])
+let cachedSubjectsByClass = {};
+
+// Auto-detect subject type from name
+function detectSubjectType(subjectName) {
+    if (!subjectName) return { type: 'lecture', duration_slots: 1 };
+
+    const nameLower = subjectName.toLowerCase();
+
+    // Lab keywords
+    const labKeywords = ['lab', 'laboratory', 'practical', 'workshop', 'hands-on'];
+    if (labKeywords.some(keyword => nameLower.includes(keyword))) {
+        return { type: 'lab', duration_slots: 2 };
+    }
+
+    // Project keywords
+    const projectKeywords = ['project', 'mini project', 'major project', 'capstone'];
+    if (projectKeywords.some(keyword => nameLower.includes(keyword))) {
+        return { type: 'project', duration_slots: 2 };
+    }
+
+    // Default: lecture
+    return { type: 'lecture', duration_slots: 1 };
+}
+
+// Handle subject name change for auto-detection
+function handleSubjectNameChange(event) {
+    const input = event.target;
+    const row = input.closest('.subject-list-row');
+    if (!row) return;
+
+    const subjectName = input.value;
+    const detected = detectSubjectType(subjectName);
+
+    // Update type dropdown
+    const typeSelect = row.querySelector('.subject-type-select');
+    if (typeSelect) {
+        typeSelect.value = detected.type;
+    }
+
+    // Update duration input
+    const durationInput = row.querySelector('.duration-input');
+    if (durationInput) {
+        durationInput.value = detected.duration_slots;
+    }
 }
 
 // --- UPDATE CLASS SELECTORS ---
 function updateClassSelectors(classes) {
-    // Update subject tab class selector
+    // Update subject tab class selector - use raw class name as value (e.g. "BE A")
     const subjectClassSelector = document.getElementById('select-class-subject');
     if (subjectClassSelector) {
-        // Keep the first option (Select Class)
-        const firstOption = subjectClassSelector.querySelector('option[value=""]');
+        const firstOpt = subjectClassSelector.querySelector('option[value=""]');
         subjectClassSelector.innerHTML = '';
-        if (firstOption) {
-            subjectClassSelector.appendChild(firstOption);
+        if (firstOpt) subjectClassSelector.appendChild(firstOpt);
+        else {
+            const def = document.createElement('option');
+            def.value = ''; def.textContent = 'Select Class'; def.disabled = true; def.selected = true;
+            subjectClassSelector.appendChild(def);
         }
-        
-        // Add classes as options
         classes.forEach(className => {
             const option = document.createElement('option');
-            option.value = className.toLowerCase().replace(/\s+/g, '-');
+            option.value = className;
             option.textContent = className;
             subjectClassSelector.appendChild(option);
         });
@@ -260,27 +349,39 @@ function setupClassAddButton() {
     if (!addButton || !container) return;
 
     addButton.addEventListener('click', () => {
-        const className = prompt('Enter class name (e.g., BE A, TE B):');
-        if (className && className.trim()) {
-            const rowHTML = `
-                <div class="list-row">
-                    <span class="list-col-main">${className.trim()}</span>
-                    <div class="action-icons">
-                        <a href="#" class="edit-class"><i data-feather="edit-2"></i></a>
-                        <a href="#" class="delete-class"><i data-feather="trash-2"></i></a>
-                    </div>
-                </div>`;
-            container.insertAdjacentHTML('beforeend', rowHTML);
-            feather.replace();
-            
-            // Update class selectors
-            const classes = [];
-            container.querySelectorAll('.list-row:not(.header)').forEach(row => {
-                const name = row.querySelector('.list-col-main')?.textContent.trim();
-                if (name) classes.push(name);
-            });
-            updateClassSelectors(classes);
-        }
+        const className = prompt('Enter class name (e.g., FEA, SEA, BEA):');
+        if (!className || !className.trim()) return;
+
+        const batchCountStr = prompt('Enter number of batches for this class (0 for no batches):', '0');
+        const batchCount = parseInt(batchCountStr) || 0;
+
+        const classNameTrimmed = className.trim();
+        cachedBatches[classNameTrimmed] = batchCount;
+
+        // Use full class name: SEA → SEA1, SEA2, SEA3
+        const batchNames = Array.from({ length: batchCount }, (_, i) => `${classNameTrimmed}${i + 1}`).join(', ');
+
+        const rowHTML = `
+            <div class="list-row">
+                <div class="list-col-main">
+                    <span class="class-name">${classNameTrimmed}</span>
+                    ${batchCount > 0 ? `<span class="batch-info" style="font-size: 0.85em; color: #666; margin-left: 8px;">Batches: ${batchNames}</span>` : ''}
+                </div>
+                <div class="action-icons">
+                    <a href="#" class="edit-class" title="Edit Class"><i data-feather="edit-2"></i></a>
+                    <a href="#" class="delete-class" title="Delete Class"><i data-feather="trash-2"></i></a>
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', rowHTML);
+        feather.replace();
+
+        // Update class selectors
+        const classes = [];
+        container.querySelectorAll('.list-row:not(.header)').forEach(row => {
+            const name = row.querySelector('.class-name')?.textContent.trim();
+            if (name) classes.push(name);
+        });
+        updateClassSelectors(classes);
     });
 }
 
@@ -291,19 +392,20 @@ function setupClassDeleteListener() {
     container.addEventListener('click', (event) => {
         const deleteLink = event.target.closest('.delete-class');
         const editLink = event.target.closest('.edit-class');
-        
+
         if (deleteLink) {
             event.preventDefault();
             const row = deleteLink.closest('.list-row');
             if (row) {
-                const className = row.querySelector('.list-col-main')?.textContent.trim();
+                const className = row.querySelector('.class-name')?.textContent.trim();
                 if (confirm(`Are you sure you want to delete class "${className}"?`)) {
+                    delete cachedBatches[className];
                     row.remove();
-                    
+
                     // Update class selectors
                     const classes = [];
                     container.querySelectorAll('.list-row:not(.header)').forEach(r => {
-                        const name = r.querySelector('.list-col-main')?.textContent.trim();
+                        const name = r.querySelector('.class-name')?.textContent.trim();
                         if (name) classes.push(name);
                     });
                     updateClassSelectors(classes);
@@ -313,20 +415,35 @@ function setupClassDeleteListener() {
             event.preventDefault();
             const row = editLink.closest('.list-row');
             if (row) {
-                const classNameSpan = row.querySelector('.list-col-main');
+                const classNameSpan = row.querySelector('.class-name');
                 const currentName = classNameSpan?.textContent.trim();
                 const newName = prompt('Enter new class name:', currentName);
-                if (newName && newName.trim() && newName !== currentName) {
-                    classNameSpan.textContent = newName.trim();
-                    
-                    // Update class selectors
-                    const classes = [];
-                    container.querySelectorAll('.list-row:not(.header)').forEach(r => {
-                        const name = r.querySelector('.list-col-main')?.textContent.trim();
-                        if (name) classes.push(name);
-                    });
-                    updateClassSelectors(classes);
-                }
+                if (!newName || !newName.trim() || newName === currentName) return;
+
+                const newNameTrimmed = newName.trim();
+                const batchCountStr = prompt('Enter number of batches for this class:', cachedBatches[currentName] || 0);
+                const batchCount = parseInt(batchCountStr) || 0;
+
+                // Update batches cache
+                delete cachedBatches[currentName];
+                cachedBatches[newNameTrimmed] = batchCount;
+
+                // Update display - use full class name
+                const batchNames = Array.from({ length: batchCount }, (_, i) => `${newNameTrimmed}${i + 1}`).join(', ');
+
+                const mainCol = row.querySelector('.list-col-main');
+                mainCol.innerHTML = `
+                    <span class="class-name">${newNameTrimmed}</span>
+                    ${batchCount > 0 ? `<span class="batch-info" style="font-size: 0.85em; color: #666; margin-left: 8px;">Batches: ${batchNames}</span>` : ''}
+                `;
+
+                // Update class selectors
+                const classes = [];
+                container.querySelectorAll('.list-row:not(.header)').forEach(r => {
+                    const name = r.querySelector('.class-name')?.textContent.trim();
+                    if (name) classes.push(name);
+                });
+                updateClassSelectors(classes);
             }
         }
     });
@@ -336,13 +453,21 @@ function setupClassDeleteListener() {
 function setupSubjectAddButton() {
     const addButton = document.querySelector('#subject .btn-add-new');
     const container = document.querySelector('.subject-list-container');
-    if (!addButton || !container) return; 
+    if (!addButton || !container) return;
 
     addButton.addEventListener('click', () => {
         const newRowHTML = `
         <div class="subject-list-row">
-            <input type="text" class="col-subject" placeholder="Subject Name">
+            <input type="text" class="col-subject subject-name-input" placeholder="Subject Name">
             <input type="text" class="col-short-name" placeholder="Short Name (e.g., ML)">
+            <div class="col-type select-wrapper">
+                <select class="subject-type-select">
+                    <option value="lecture" selected>Lecture</option>
+                    <option value="lab">Lab</option>
+                    <option value="project">Project</option>
+                </select>
+            </div>
+            <input type="number" class="col-duration duration-input" value="1" min="1" max="4" placeholder="1">
             <div class="col-availability">
                 <span class="availability-tag"><i data-feather="check-circle"></i> All available</span>
             </div>
@@ -351,6 +476,14 @@ function setupSubjectAddButton() {
             </div>
         </div>`;
         container.insertAdjacentHTML('beforeend', newRowHTML);
+
+        // Add auto-detection to the new row
+        const newRow = container.lastElementChild;
+        const nameInput = newRow.querySelector('.subject-name-input');
+        if (nameInput) {
+            nameInput.addEventListener('input', handleSubjectNameChange);
+        }
+
         feather.replace();
     });
 }
@@ -361,7 +494,7 @@ function setupSubjectDeleteListener() {
     listContainer.addEventListener('click', (event) => {
         const deleteLink = event.target.closest('.col-action a');
         if (!deleteLink) return;
-        event.preventDefault(); 
+        event.preventDefault();
         const row = deleteLink.closest('.subject-list-row');
         if (row) {
             const subjectNameInput = row.querySelector('.col-subject');
@@ -378,7 +511,7 @@ function setupSubjectDeleteListener() {
 function setupRoomAddButton() {
     const addButton = document.querySelector('#rooms .btn-add-new');
     const container = document.querySelector('.room-list-container');
-    if (!addButton || !container) return; 
+    if (!addButton || !container) return;
 
     addButton.addEventListener('click', () => {
         const newRowHTML = `
@@ -398,7 +531,7 @@ function setupRoomAddButton() {
             </div>
         </div>`;
         container.insertAdjacentHTML('beforeend', newRowHTML);
-        feather.replace(); 
+        feather.replace();
     });
 }
 function setupRoomDeleteListener() {
@@ -408,7 +541,7 @@ function setupRoomDeleteListener() {
     listContainer.addEventListener('click', (event) => {
         const deleteLink = event.target.closest('.col-action a');
         if (!deleteLink) return;
-        event.preventDefault(); 
+        event.preventDefault();
         const row = deleteLink.closest('.room-list-row');
         if (row) {
             const roomNumInput = row.querySelector('.col-room-num');
@@ -425,7 +558,7 @@ function setupRoomDeleteListener() {
 function setupFacultyAddButton() {
     const addButton = document.querySelector('#faculties .btn-add-new');
     const container = document.querySelector('.faculty-list-container');
-    if (!addButton || !container) return; 
+    if (!addButton || !container) return;
 
     addButton.addEventListener('click', () => {
         const newRowHTML = `
@@ -454,7 +587,7 @@ function setupFacultyDeleteListener() {
     listContainer.addEventListener('click', (event) => {
         const deleteLink = event.target.closest('.col-action a');
         if (!deleteLink) return;
-        event.preventDefault(); 
+        event.preventDefault();
         const row = deleteLink.closest('.faculty-list-row');
         if (row) {
             const profNameInput = row.querySelector('.col-prof-name');
@@ -473,26 +606,19 @@ const saveDataBtn = document.getElementById('save-data-btn');
 if (saveDataBtn) {
     saveDataBtn.addEventListener('click', async () => {
 
-        // Collecting class
+        // Collecting classes and batches
         const classes = [];
+        const batches = {};
         document.querySelectorAll('#classes .list-row:not(.header)').forEach(row => {
-            const className = row.querySelector('.list-col-main')?.textContent.trim();
-            if (className) classes.push(className);
-        });
-
-
-        // 1. Collect Subjects
-       const subjects = [];
-        document.querySelectorAll('.subject-list-row:not(.header)').forEach(row => {
-            const name = row.querySelector('.col-subject')?.value.trim();
-            const short = row.querySelector('.col-short-name')?.value.trim();
-            if (name) {
-                subjects.push({ name, short });
+            const className = row.querySelector('.class-name')?.textContent.trim();
+            if (className) {
+                classes.push(className);
+                batches[className] = cachedBatches[className] || 0;
             }
         });
 
 
-        // 2. Collect Faculties
+        // 1. Collect Faculties
         const faculties = [];
         document.querySelectorAll('.faculty-list-row:not(.header)').forEach(row => {
             const name = row.querySelector('.col-prof-name')?.value.trim();
@@ -504,7 +630,7 @@ if (saveDataBtn) {
         });
 
 
-        // 3. Collect Rooms
+        // 2. Collect Rooms
         const rooms = [];
         document.querySelectorAll('.room-list-row:not(.header)').forEach(row => {
             const room = row.querySelector('.col-room-num')?.value.trim();
@@ -515,41 +641,64 @@ if (saveDataBtn) {
         });
 
 
-        const payload = {
-            classes,
-            subjects,   
-            faculties,
-            rooms
-        };
-
-
-        
-       try {
-        const response = await fetch(
-            "http://localhost:5000/api/hod/save-data",
-            {
+        try {
+            const savePayload = { classes, batches, faculties, rooms };
+            const response = await fetch("http://localhost:5000/api/hod/save-data", {
                 method: "POST",
                 headers: getAuthHeaders(),
-                body: JSON.stringify(payload)
+                body: JSON.stringify(savePayload)
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                alert("Failed to save data");
+                return;
             }
-        );
 
-        const result = await response.json();
+            // Save subjects for the selected class only (if a class is selected in Subject tab)
+            const subjectClassSel = document.getElementById('select-class-subject');
+            const selectedClass = subjectClassSel?.value?.trim();
+            if (selectedClass) {
+                const subjects = [];
+                document.querySelectorAll('.subject-list-row:not(.header)').forEach(row => {
+                    const name = row.querySelector('.col-subject')?.value?.trim();
+                    const short = row.querySelector('.col-short-name')?.value?.trim();
+                    const type = row.querySelector('.subject-type-select')?.value || 'lecture';
+                    const duration_slots = parseInt(row.querySelector('.duration-input')?.value) || 1;
 
-        if (!response.ok || !result.success) {
-            alert("Failed to save data");
-            return;
+                    if (name) {
+                        subjects.push({ name, short, type, duration_slots });
+                    }
+                });
+                const subResp = await fetch("http://localhost:5000/api/hod/save-subjects-for-class", {
+                    method: "POST",
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ class_name: selectedClass, subjects })
+                });
+                const subRes = await subResp.json();
+                if (!subResp.ok || !subRes.success) {
+                    alert("Data saved, but subjects for this class could not be saved.");
+                } else {
+                    // Update cache with saved subjects
+                    cachedSubjectsByClass[selectedClass] = subjects;
+                }
+            }
+
+            alert("Data saved successfully");
+
+            // Save the currently selected class before reloading
+            const currentSelectedClass = subjectClassSel?.value;
+
+            // Reload all data
+            await loadSavedData();
+
+            // Restore the class selection and reload its subjects
+            if (currentSelectedClass && subjectClassSel) {
+                subjectClassSel.value = currentSelectedClass;
+                loadSubjects(cachedSubjectsByClass[currentSelectedClass] || []);
+            }
+        } catch (error) {
+            console.error("Save data error:", error);
+            alert("Backend not reachable");
         }
-
-        alert("Data saved successfully");
-        
-        // Reload data to reflect changes
-        await loadSavedData();
-
-    } catch (error) {
-        console.error("Save data error:", error);
-        alert("Backend not reachable");
-    }
-
     });
 }

@@ -3,11 +3,13 @@ DATA_STORE = {
     "subjects": [],
     "faculties": [],
     "rooms": [],
+    "batches": {},  # {"FEA": ["F1", "F2", "F3"], "SEA": ["S1", "S2"]}
     "faculty_preferences": [],
     "timetable_config": {
         "lectures_per_day": 6,
-        "lesson_hours": {},  # {class: {subject: hours_per_week}}
-        "faculty_choices": {}  # {faculty: {class: [subjects]}}
+        "lesson_hours": {},
+        "faculty_choices": {},
+        "subjects_by_class": {}  # {"BE A": [{name, short}], "BE B": [...]}
     },
-    "timetable": None   #  CENTRAL SHARED TIMETABLE
+    "timetable": None
 }

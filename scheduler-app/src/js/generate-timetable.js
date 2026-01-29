@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const targetContent = document.getElementById(tab.dataset.tab);
             if (targetContent) {
                 targetContent.classList.add('active');
-                
+
                 // If review tab is clicked, load review content
                 if (tab.dataset.tab === 'review-generate') {
                     await loadReviewContent();
@@ -45,59 +45,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
+    // 4. Setup Add Lecture and Add Break Buttons
+    setupTimeSettingsButtons();
 
-    // 4. Dynamic Lecture Row Generation (for General Settings tab)
-    const lecturesCountInput = document.getElementById('lectures-count');
-    const lectureRowsContainer = document.getElementById('lecture-rows-container');
+    // Load saved time settings
+    await loadTimeSettings();
 
-    const generateLectureRows = (count) => {
-        if (!lectureRowsContainer) return; // Exit if not on the right page
-        
-        lectureRowsContainer.innerHTML = '';
-        if (count > 0 && count <= 12) {
-            for (let i = 1; i <= count; i++) {
-                const rowHTML = `
-                    <div class="lecture-row">
-                        <span class="lecture-row-label">Lecture ${i}</span>
-                        <div class="time-inputs">
-                            <div class="time-input-wrapper">
-                                <i data-feather="clock"></i>
-                                <input type="time">
-                            </div>
-                            <button class="btn-add-break">
-                                <i data-feather="plus"></i> Add Break
-                            </button>
-                            <div class="time-input-wrapper">
-                                <i data-feather="clock"></i>
-                                <input type="time">
-                            </div>
-                        </div>
-                    </div>
-                `;
-                lectureRowsContainer.insertAdjacentHTML('beforeend', rowHTML);
-            }
-        }
-        feather.replace();
-    };
-
-    if (lecturesCountInput) {
-        lecturesCountInput.addEventListener('input', () => {
-            const count = parseInt(lecturesCountInput.value, 10);
-            generateLectureRows(count);
-        });
-        
-        // Initial generation of rows
-        generateLectureRows(parseInt(lecturesCountInput.value, 10));
-    }
-    
     // 5. Setup class selector change listener for lessons tab
     const classSelector = document.getElementById('select-class-lesson');
     if (classSelector) {
-        classSelector.addEventListener('change', () => {
-            loadSubjectsForClass();
+        classSelector.addEventListener('change', async () => {
+            await loadSubjectsForClass();
         });
     }
-    
+
     // 6. Setup for Lessons Tab
     setupLessonAddButton();
     setupLessonDeleteListener();
@@ -105,13 +66,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 7. Setup for Faculty Choice Tab
     setupFacultyAddButton();
     setupFacultyDeleteListener();
-    
+
     // 8. Setup Save Configuration Buttons
     setupSaveButtons();
-    
+
     // 9. Setup Review Tab
     setupReviewTab();
-    
+
     // 10. Setup Generate Timetable Button (only in review tab)
     setupGenerateTimetableButton();
 });
@@ -142,16 +103,15 @@ async function loadSavedDataForGenerator() {
                 faculties: result.data.faculties || [],
                 rooms: result.data.rooms || []
             };
-            
+
             // Update class selector
             updateClassSelector(savedData.classes);
-            
+
             // Load faculty choice table
             loadFacultyChoiceTable(savedData.faculties, savedData.classes);
-            
+
             // Load subjects for default class if available
-            // Note: loadSubjectsForClass will handle empty state gracefully
-            loadSubjectsForClass();
+            await loadSubjectsForClass();
         }
     } catch (error) {
         console.error("Error loading saved data:", error);
@@ -176,45 +136,54 @@ function updateClassSelector(classes) {
         defaultOption.selected = true;
         classSelector.appendChild(defaultOption);
     }
-    
-    // Add classes as options
+
+    // Add classes as options - use raw class name so it matches CSP/backend (e.g. "BE A", "BEA")
     classes.forEach(className => {
         const option = document.createElement('option');
-        option.value = className.toLowerCase().replace(/\s+/g, '-');
+        option.value = className;
         option.textContent = className;
         classSelector.appendChild(option);
     });
 }
 
 // --- LOAD SUBJECTS FOR SELECTED CLASS ---
-function loadSubjectsForClass() {
+async function loadSubjectsForClass() {
     const classSelector = document.getElementById('select-class-lesson');
     const container = document.querySelector('.lesson-list-container');
-    
+
     if (!classSelector || !container) return;
-    
+
     const selectedClass = classSelector.value;
-    
+
     // Clear existing subjects (except header)
     const header = container.querySelector('.lesson-list-row.header');
     if (!header) return; // Safety check
-    
+
     container.innerHTML = '';
     container.appendChild(header);
-    
+
     if (!selectedClass) {
         return; // Just show header if no class selected
     }
-    
-    // Add subjects dynamically
-    savedData.subjects.forEach(subject => {
+
+    // Load saved lessons for this class so we don't overwrite with another class's data
+    const config = await getTimetableConfig();
+    const saved = (config.lesson_hours || {})[selectedClass];
+    const rows = (Array.isArray(saved) && saved.length > 0)
+        ? saved
+        : (savedData.subjects || []).map(s => ({ subject: s.name || '', short: s.short || '', hours: 3 }));
+
+    rows.forEach(lesson => {
+        const subject = lesson.subject || '';
+        const short = lesson.short || '';
+        const hours = Number(lesson.hours) || 3;
         const rowHTML = `
             <div class="lesson-list-row">
-                <div class="col-subject"><input type="text" class="new-subject-input" value="${subject.name || ''}" placeholder="Subject Name"></div>
-                <div class="col-short-name"><input type="text" class="new-subject-input" value="${subject.short || ''}" placeholder="SN"></div>
+                <div class="col-subject"><input type="text" class="new-subject-input" value="${(subject + '').replace(/"/g, '&quot;')}" placeholder="Subject Name"></div>
+                <div class="col-short-name"><input type="text" class="new-subject-input" value="${(short + '').replace(/"/g, '&quot;')}" placeholder="SN"></div>
                 <span class="col-availability availability-tag"><i data-feather="check-circle"></i> All available</span>
                 <div class="col-hrs-week">
-                    <input type="number" class="hrs-input" value="3" min="1" max="10">
+                    <input type="number" class="hrs-input" value="${hours}" min="1" max="10">
                 </div>
                 <div class="col-action">
                     <a href="#"><i data-feather="trash-2"></i></a>
@@ -222,7 +191,7 @@ function loadSubjectsForClass() {
             </div>`;
         container.insertAdjacentHTML('beforeend', rowHTML);
     });
-    
+
     feather.replace();
 }
 
@@ -230,43 +199,43 @@ function loadSubjectsForClass() {
 function loadFacultyChoiceTable(faculties, classes) {
     const container = document.querySelector('.faculty-choice-list-container');
     if (!container) return;
-    
+
     // Clear existing content (except header)
     const header = container.querySelector('.faculty-choice-list-row.header');
     container.innerHTML = '';
-    
+
     // Build header with dynamic class columns
     let headerHTML = `
         <div class="faculty-choice-list-row header">
             <span class="col-prof-name">Professor name</span>
             <span class="col-short-name">Short name</span>`;
-    
+
     classes.forEach(className => {
         const classKey = className.toLowerCase().replace(/\s+/g, '-');
         headerHTML += `<span class="col-${classKey}">${className}</span>`;
     });
-    
+
     headerHTML += `<span class="col-action">Action</span></div>`;
     container.insertAdjacentHTML('beforeend', headerHTML);
-    
+
     // Add faculty rows with dynamic class columns
     faculties.forEach(faculty => {
         let rowHTML = `
             <div class="faculty-choice-list-row">
                 <span class="col-prof-name">${faculty.name || ''}</span>
                 <span class="col-short-name">${faculty.short || ''}</span>`;
-        
+
         classes.forEach(className => {
             const classKey = className.toLowerCase().replace(/\s+/g, '-');
             rowHTML += `<div class="col-${classKey}"><input type="text" class="subject-choice-input" placeholder="Subject"></div>`;
         });
-        
+
         rowHTML += `
                 <div class="col-action"><a href="#"><i data-feather="trash-2"></i></a></div>
             </div>`;
         container.insertAdjacentHTML('beforeend', rowHTML);
     });
-    
+
     feather.replace();
 }
 
@@ -275,7 +244,7 @@ function loadFacultyChoiceTable(faculties, classes) {
 function setupLessonAddButton() {
     const addButton = document.querySelector('#lessons .btn-add-new');
     const container = document.querySelector('.lesson-list-container');
-    if (!addButton || !container) return; 
+    if (!addButton || !container) return;
 
     addButton.addEventListener('click', () => {
         const newRowHTML = `
@@ -291,7 +260,7 @@ function setupLessonAddButton() {
             </div>
         </div>`;
         container.insertAdjacentHTML('beforeend', newRowHTML);
-        feather.replace(); 
+        feather.replace();
     });
 }
 
@@ -301,8 +270,8 @@ function setupLessonDeleteListener() {
 
     listContainer.addEventListener('click', (event) => {
         const deleteLink = event.target.closest('.col-action a');
-        if (!deleteLink) return; 
-        event.preventDefault(); 
+        if (!deleteLink) return;
+        event.preventDefault();
         const row = deleteLink.closest('.lesson-list-row');
         if (row) {
             let subjectName = "this new subject";
@@ -332,7 +301,7 @@ function setupFacultyAddButton() {
             const classKey = className.toLowerCase().replace(/\s+/g, '-');
             classColumnsHTML += `<div class="col-${classKey}"><input type="text" class="subject-choice-input" placeholder="Subject"></div>`;
         });
-        
+
         const newRowHTML = `
         <div class="faculty-choice-list-row">
             <div class="col-prof-name"><input type="text" class="new-subject-input" placeholder="Professor Name"></div>
@@ -357,7 +326,7 @@ function setupFacultyDeleteListener() {
         if (row) {
             let profName = "this new professor";
             const nameSpan = row.querySelector('.col-prof-name');
-            if(nameSpan) {
+            if (nameSpan) {
                 const input = nameSpan.querySelector('input');
                 profName = input ? (input.value || "this new professor") : nameSpan.textContent;
             }
@@ -377,7 +346,7 @@ function setupSaveButtons() {
             await saveGeneralSettings();
         });
     }
-    
+
     // Save Lessons
     const saveLessonsBtn = document.getElementById("save-lessons-btn");
     if (saveLessonsBtn) {
@@ -385,7 +354,7 @@ function setupSaveButtons() {
             await saveLessons();
         });
     }
-    
+
     // Save Faculty Choices
     const saveFacultyBtn = document.getElementById("save-faculty-choice-btn");
     if (saveFacultyBtn) {
@@ -395,67 +364,40 @@ function setupSaveButtons() {
     }
 }
 
-// --- SAVE GENERAL SETTINGS ---
-async function saveGeneralSettings() {
-    const lecturesPerDay = document.getElementById("lectures-count")?.value || 6;
-    
-    try {
-        const currentConfig = await getTimetableConfig();
-        currentConfig.lectures_per_day = parseInt(lecturesPerDay, 10);
-        
-        const response = await fetch(
-            "http://localhost:5000/api/hod/save-timetable-config",
-            {
-                method: "POST",
-                headers: getAuthHeaders(),
-                body: JSON.stringify(currentConfig)
-            }
-        );
-        
-        const result = await response.json();
-        if (result.success) {
-            alert("General settings saved successfully!");
-        } else {
-            alert("Failed to save settings");
-        }
-    } catch (error) {
-        console.error("Error saving general settings:", error);
-        alert("Failed to save settings");
-    }
-}
+
 
 // --- SAVE LESSONS ---
 async function saveLessons() {
     const classSelector = document.getElementById("select-class-lesson");
     const selectedClass = classSelector?.value;
-    
+
     if (!selectedClass) {
         alert("Please select a class first");
         return;
     }
-    
+
     const lessons = [];
     document.querySelectorAll('.lesson-list-row:not(.header)').forEach(row => {
         const subjectInput = row.querySelector('.col-subject input');
         const shortInput = row.querySelector('.col-short-name input');
         const hoursInput = row.querySelector('.col-hrs-week input');
-        
+
         const subject = subjectInput?.value.trim();
         const short = shortInput?.value.trim();
         const hours = parseInt(hoursInput?.value || 0, 10);
-        
+
         if (subject && hours > 0) {
             lessons.push({ subject, short, hours });
         }
     });
-    
+
     try {
         const currentConfig = await getTimetableConfig();
         if (!currentConfig.lesson_hours) {
             currentConfig.lesson_hours = {};
         }
         currentConfig.lesson_hours[selectedClass] = lessons;
-        
+
         const response = await fetch(
             "http://localhost:5000/api/hod/save-timetable-config",
             {
@@ -464,7 +406,7 @@ async function saveLessons() {
                 body: JSON.stringify(currentConfig)
             }
         );
-        
+
         const result = await response.json();
         if (result.success) {
             alert(`Lessons for ${selectedClass} saved successfully!`);
@@ -480,16 +422,16 @@ async function saveLessons() {
 // --- SAVE FACULTY CHOICES ---
 async function saveFacultyChoices() {
     const facultyChoices = {};
-    
+
     document.querySelectorAll('.faculty-choice-list-row:not(.header)').forEach(row => {
         const nameInput = row.querySelector('.col-prof-name input');
         const nameSpan = row.querySelector('.col-prof-name span');
         const facultyName = nameInput?.value.trim() || nameSpan?.textContent.trim();
-        
+
         if (!facultyName) return;
-        
+
         facultyChoices[facultyName] = {};
-        
+
         // Get choices for each class column
         savedData.classes.forEach(className => {
             const classKey = className.toLowerCase().replace(/\s+/g, '-');
@@ -503,11 +445,11 @@ async function saveFacultyChoices() {
             }
         });
     });
-    
+
     try {
         const currentConfig = await getTimetableConfig();
         currentConfig.faculty_choices = facultyChoices;
-        
+
         const response = await fetch(
             "http://localhost:5000/api/hod/save-timetable-config",
             {
@@ -516,7 +458,7 @@ async function saveFacultyChoices() {
                 body: JSON.stringify(currentConfig)
             }
         );
-        
+
         const result = await response.json();
         if (result.success) {
             alert("Faculty choices saved successfully!");
@@ -539,7 +481,7 @@ async function getTimetableConfig() {
                 headers: getAuthHeaders()
             }
         );
-        
+
         if (response.ok) {
             const result = await response.json();
             return result.config || {
@@ -551,7 +493,7 @@ async function getTimetableConfig() {
     } catch (error) {
         console.error("Error getting config:", error);
     }
-    
+
     return {
         lectures_per_day: 6,
         lesson_hours: {},
@@ -569,15 +511,15 @@ function setupReviewTab() {
 async function loadReviewContent() {
     const reviewContent = document.getElementById("review-content");
     const generateBtn = document.getElementById("generateTimetableBtn");
-    
+
     if (!reviewContent) return;
-    
+
     try {
         const config = await getTimetableConfig();
         const allData = savedData;
-        
+
         let html = '<div class="review-sections">';
-        
+
         // General Settings Review
         html += `
             <div class="review-section">
@@ -585,13 +527,13 @@ async function loadReviewContent() {
                 <p><strong>Lectures per day:</strong> ${config.lectures_per_day || 6}</p>
             </div>
         `;
-        
+
         // Lessons Review
         html += `
             <div class="review-section">
                 <h4><i data-feather="book"></i> Lessons Configuration</h4>
         `;
-        
+
         if (Object.keys(config.lesson_hours || {}).length > 0) {
             Object.entries(config.lesson_hours).forEach(([className, lessons]) => {
                 html += `<div style="margin: 1rem 0;"><strong>${className}:</strong><ul>`;
@@ -604,13 +546,13 @@ async function loadReviewContent() {
             html += '<p style="color: #999;">No lessons configured yet</p>';
         }
         html += '</div>';
-        
+
         // Faculty Choices Review
         html += `
             <div class="review-section">
                 <h4><i data-feather="users"></i> Faculty Subject Choices</h4>
         `;
-        
+
         if (Object.keys(config.faculty_choices || {}).length > 0) {
             Object.entries(config.faculty_choices).forEach(([facultyName, choices]) => {
                 html += `<div style="margin: 1rem 0;"><strong>${facultyName}:</strong><ul>`;
@@ -623,7 +565,7 @@ async function loadReviewContent() {
             html += '<p style="color: #999;">No faculty choices configured yet</p>';
         }
         html += '</div>';
-        
+
         // Basic Data Review
         html += `
             <div class="review-section">
@@ -634,10 +576,10 @@ async function loadReviewContent() {
                 <p><strong>Rooms:</strong> ${allData.rooms.length}</p>
             </div>
         `;
-        
+
         html += '</div>';
         reviewContent.innerHTML = html;
-        
+
         // Show generate button if configuration is complete
         const hasLessons = Object.keys(config.lesson_hours || {}).length > 0;
         if (hasLessons && allData.classes.length > 0) {
@@ -646,7 +588,7 @@ async function loadReviewContent() {
             generateBtn.style.display = 'none';
             reviewContent.innerHTML += '<p style="text-align: center; color: #f44336; margin-top: 2rem;">⚠️ Please complete all configuration steps before generating.</p>';
         }
-        
+
         feather.replace();
     } catch (error) {
         console.error("Error loading review:", error);
@@ -657,13 +599,13 @@ async function loadReviewContent() {
 // --- SETUP GENERATE TIMETABLE BUTTON ---
 function setupGenerateTimetableButton() {
     const generateBtn = document.getElementById("generateTimetableBtn");
-    
+
     if (generateBtn) {
         generateBtn.addEventListener("click", async () => {
             if (!confirm("Are you sure you want to generate the timetable? This will create a new timetable based on your configuration.")) {
                 return;
             }
-            
+
             try {
                 const response = await fetch(
                     "http://localhost:5000/api/hod/generate-timetable",
@@ -692,4 +634,185 @@ function setupGenerateTimetableButton() {
 }
 
 
-// --- TIMETABLE GENERATION LOGIC ---
+// --- TIME SETTINGS MANAGEMENT ---
+let lectureCounter = 0;
+let breakCounter = 0;
+
+function setupTimeSettingsButtons() {
+    const addLectureBtn = document.getElementById('add-lecture-btn');
+    const addBreakBtn = document.getElementById('add-break-btn');
+    const container = document.getElementById('lecture-rows-container');
+
+    if (!addLectureBtn || !addBreakBtn || !container) return;
+
+    // Add Lecture button
+    addLectureBtn.addEventListener('click', () => {
+        addLectureRow();
+    });
+
+    // Add Break button
+    addBreakBtn.addEventListener('click', () => {
+        addBreakRow();
+    });
+
+    // Setup delete listeners using event delegation
+    container.addEventListener('click', (event) => {
+        const deleteBtn = event.target.closest('.btn-delete-row');
+        if (deleteBtn) {
+            event.preventDefault();
+            const row = deleteBtn.closest('.lecture-row, .break-row');
+            if (row && confirm('Are you sure you want to delete this item?')) {
+                row.remove();
+            }
+        }
+    });
+}
+
+function addLectureRow(startTime = '', endTime = '') {
+    const container = document.getElementById('lecture-rows-container');
+    if (!container) return;
+
+    lectureCounter++;
+    const rowHTML = `
+        <div class="lecture-row" data-type="lecture">
+            <span class="lecture-row-label">Lecture ${lectureCounter}</span>
+            <div class="time-inputs">
+                <div class="time-input-wrapper">
+                    <i data-feather="clock"></i>
+                    <input type="time" class="start-time" value="${startTime}">
+                </div>
+                <span style="color: var(--text-light); font-weight: 500;">to</span>
+                <div class="time-input-wrapper">
+                    <i data-feather="clock"></i>
+                    <input type="time" class="end-time" value="${endTime}">
+                </div>
+                <button class="btn-delete-row">
+                    <i data-feather="trash-2"></i> Delete
+                </button>
+            </div>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', rowHTML);
+    feather.replace();
+}
+
+function addBreakRow(startTime = '', endTime = '') {
+    const container = document.getElementById('lecture-rows-container');
+    if (!container) return;
+
+    breakCounter++;
+    const rowHTML = `
+        <div class="break-row" data-type="break">
+            <span class="break-row-label">
+                <i data-feather="coffee"></i>
+                Break ${breakCounter}
+            </span>
+            <div class="time-inputs">
+                <div class="time-input-wrapper">
+                    <i data-feather="clock"></i>
+                    <input type="time" class="start-time" value="${startTime}">
+                </div>
+                <span style="color: #92400E; font-weight: 500;">to</span>
+                <div class="time-input-wrapper">
+                    <i data-feather="clock"></i>
+                    <input type="time" class="end-time" value="${endTime}">
+                </div>
+                <button class="btn-delete-row">
+                    <i data-feather="trash-2"></i> Delete
+                </button>
+            </div>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', rowHTML);
+    feather.replace();
+}
+
+async function loadTimeSettings() {
+    try {
+        const config = await getTimetableConfig();
+        const timeSettings = config.time_settings || [];
+
+        // Clear container
+        const container = document.getElementById('lecture-rows-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        // Reset counters
+        lectureCounter = 0;
+        breakCounter = 0;
+
+        // Load saved settings or add default lecture if empty
+        if (timeSettings.length === 0) {
+            // Add default lecture
+            addLectureRow('09:00', '10:00');
+        } else {
+            timeSettings.forEach(item => {
+                if (item.type === 'lecture') {
+                    addLectureRow(item.start_time, item.end_time);
+                } else if (item.type === 'break') {
+                    addBreakRow(item.start_time, item.end_time);
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error loading time settings:', error);
+        // Add default lecture on error
+        addLectureRow('09:00', '10:00');
+    }
+}
+
+// --- SAVE GENERAL SETTINGS (UPDATED) ---
+async function saveGeneralSettings() {
+    const container = document.getElementById('lecture-rows-container');
+    if (!container) return;
+
+    const timeSettings = [];
+    const rows = container.querySelectorAll('.lecture-row, .break-row');
+
+    rows.forEach(row => {
+        const type = row.dataset.type;
+        const startTimeInput = row.querySelector('.start-time');
+        const endTimeInput = row.querySelector('.end-time');
+
+        const startTime = startTimeInput?.value || '';
+        const endTime = endTimeInput?.value || '';
+
+        if (startTime && endTime) {
+            timeSettings.push({
+                type: type,
+                start_time: startTime,
+                end_time: endTime
+            });
+        }
+    });
+
+    if (timeSettings.length === 0) {
+        alert('Please add at least one lecture or break');
+        return;
+    }
+
+    try {
+        const currentConfig = await getTimetableConfig();
+        currentConfig.time_settings = timeSettings;
+        currentConfig.lectures_per_day = timeSettings.filter(t => t.type === 'lecture').length;
+
+        const response = await fetch(
+            "http://localhost:5000/api/hod/save-timetable-config",
+            {
+                method: "POST",
+                headers: getAuthHeaders(),
+                body: JSON.stringify(currentConfig)
+            }
+        );
+
+        const result = await response.json();
+        if (result.success) {
+            alert("Time settings saved successfully!");
+        } else {
+            alert("Failed to save settings");
+        }
+    } catch (error) {
+        console.error("Error saving general settings:", error);
+        alert("Failed to save settings");
+    }
+}

@@ -38,7 +38,8 @@ class SupabaseStore:
         "faculty_preferences": "faculty_preferences",
         "timetable_config": "timetable_config",
         "timetable": "timetables",
-        "users": "users"
+        "users": "users",
+        "batches": "batches"
     }
     
     @staticmethod
@@ -72,28 +73,48 @@ class SupabaseStore:
     
     @staticmethod
     def save_subjects(subjects):
-        """Save subjects to database"""
+        """Save subjects to database with type and duration_slots"""
+        if not supabase:
+            return False
         try:
             # Delete all existing subjects
             supabase.table(SupabaseStore.TABLES["subjects"]).delete().neq("id", 0).execute()
             
-            # Insert new subjects
+            # Insert new subjects with type and duration_slots
             if subjects:
-                data = [{"name": subj.get("name", ""), "short": subj.get("short", "")} for subj in subjects]
+                data = [
+                    {
+                        "name": subj.get("name", ""),
+                        "short": subj.get("short", ""),
+                        "type": subj.get("type", "lecture"),
+                        "duration_slots": subj.get("duration_slots", 1)
+                    }
+                    for subj in subjects
+                ]
                 supabase.table(SupabaseStore.TABLES["subjects"]).insert(data).execute()
             return True
         except Exception as e:
-            print(f"Error saving subjects: {e}")
+            print(f"❌ Error saving subjects: {e}")
             return False
     
     @staticmethod
     def get_subjects():
         """Get all subjects from database"""
+        if not supabase:
+            return []
         try:
             response = supabase.table(SupabaseStore.TABLES["subjects"]).select("*").execute()
-            return [{"name": row["name"], "short": row.get("short", "")} for row in response.data]
+            return [
+                {
+                    "name": row["name"],
+                    "short": row.get("short", ""),
+                    "type": row.get("type", "lecture"),
+                    "duration_slots": row.get("duration_slots", 1)
+                }
+                for row in response.data
+            ]
         except Exception as e:
-            print(f"Error getting subjects: {e}")
+            print(f"❌ Error getting subjects: {e}")
             return []
     
     @staticmethod
@@ -196,18 +217,23 @@ class SupabaseStore:
         try:
             response = supabase.table(SupabaseStore.TABLES["timetable_config"]).select("*").limit(1).execute()
             if response.data:
-                return json.loads(response.data[0]["config"])
+                cfg = json.loads(response.data[0]["config"])
+                if "subjects_by_class" not in cfg:
+                    cfg["subjects_by_class"] = {}
+                return cfg
             return {
                 "lectures_per_day": 6,
                 "lesson_hours": {},
-                "faculty_choices": {}
+                "faculty_choices": {},
+                "subjects_by_class": {}
             }
         except Exception as e:
             print(f"Error getting timetable config: {e}")
             return {
                 "lectures_per_day": 6,
                 "lesson_hours": {},
-                "faculty_choices": {}
+                "faculty_choices": {},
+                "subjects_by_class": {}
             }
     
     @staticmethod
@@ -239,15 +265,97 @@ class SupabaseStore:
             return None
     
     @staticmethod
+    def _union_subjects(subjects_by_class):
+        """Deduplicated list of all subjects from subjects_by_class."""
+        seen = set()
+        out = []
+        for lst in (subjects_by_class or {}).values():
+            for s in lst or []:
+                n = (s.get("name") or "").strip()
+                if n and n not in seen:
+                    seen.add(n)
+                    out.append({"name": n, "short": (s.get("short") or "").strip()})
+        return out
+
+    
+    # ==================== BATCH MANAGEMENT ====================
+    
+    @staticmethod
+    def save_batches(class_name, batch_count):
+        """Save batches for a class with sequential naming based on class name"""
+        if not supabase:
+            return False
+        try:
+            # Delete existing batches for this class
+            supabase.table(SupabaseStore.TABLES["batches"]).delete().eq("class_name", class_name).execute()
+            
+            # Use full class name as prefix
+            # SEA → SEA1, SEA2, SEA3
+            # FEA → FEA1, FEA2, FEA3
+            
+            # Create new batches: SEA1, SEA2... or FEA1, FEA2... etc.
+            if batch_count > 0:
+                batches = [
+                    {
+                        "class_name": class_name,
+                        "batch_name": f"{class_name}{i+1}",
+                        "batch_number": i+1
+                    }
+                    for i in range(batch_count)
+                ]
+                supabase.table(SupabaseStore.TABLES["batches"]).insert(batches).execute()
+            return True
+        except Exception as e:
+            print(f"❌ Error saving batches: {e}")
+            return False
+    
+    @staticmethod
+    def get_batches(class_name=None):
+        """Get batches for a specific class or all batches"""
+        if not supabase:
+            return []
+        try:
+            query = supabase.table(SupabaseStore.TABLES["batches"]).select("*").order("batch_number")
+            if class_name:
+                query = query.eq("class_name", class_name)
+            response = query.execute()
+            return response.data if response.data else []
+        except Exception as e:
+            print(f"Error getting batches: {e}")
+            return []
+    
+    @staticmethod
+    def get_all_batches_with_classes():
+        """Get all batches grouped by class"""
+        if not supabase:
+            return {}
+        try:
+            response = supabase.table(SupabaseStore.TABLES["batches"]).select("*").order("class_name, batch_number").execute()
+            batches_by_class = {}
+            for batch in response.data:
+                class_name = batch["class_name"]
+                if class_name not in batches_by_class:
+                    batches_by_class[class_name] = []
+                batches_by_class[class_name].append(batch["batch_name"])
+            return batches_by_class
+        except Exception as e:
+            print(f"Error getting batches by class: {e}")
+            return {}
+    
+    @staticmethod
     def get_all_data():
-        """Get all data (for compatibility with existing code)"""
+        """Get all data. subjects = union of subjects_by_class; subjects_by_class is per-class."""
+        config = SupabaseStore.get_timetable_config()
+        subjects_by_class = config.get("subjects_by_class") or {}
+        subjects = SupabaseStore._union_subjects(subjects_by_class)
         return {
             "classes": SupabaseStore.get_classes(),
-            "subjects": SupabaseStore.get_subjects(),
+            "subjects": subjects,
+            "subjects_by_class": subjects_by_class,
             "faculties": SupabaseStore.get_faculties(),
             "rooms": SupabaseStore.get_rooms(),
-            "faculty_preferences": [],  # TODO: Implement if needed
-            "timetable_config": SupabaseStore.get_timetable_config(),
+            "faculty_preferences": [],
+            "timetable_config": config,
             "timetable": SupabaseStore.get_timetable()
         }
     

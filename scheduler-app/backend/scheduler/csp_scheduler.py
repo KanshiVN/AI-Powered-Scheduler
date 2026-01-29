@@ -113,6 +113,42 @@ def generate_timetable_csp(data, config=None):
                             for f in range(num_faculties)) == hours_required
                     )
     
+    # Constraint 3.5: Restrict faculty assignments to their choices
+    # Only faculties who explicitly chose a subject for a class can teach it.
+    # If NO faculty chose a subject, we allow anyone (fallback).
+    
+    # Pre-compute allowed faculties for each (class, subject)
+    allowed_faculties = {} # (class_idx, subject_idx) -> [faculty_indices]
+    
+    for c, class_name in enumerate(classes):
+        for subj_idx, subject in enumerate(subjects):
+            subject_name = subject.get("name", "")
+            allowed = []
+            
+            for f, faculty in enumerate(faculties):
+                faculty_name = faculty.get("name", "")
+                # Check choices
+                f_choices = faculty_choices.get(faculty_name, {}).get(class_name, [])
+                # Case insensitive check
+                if any(choice.lower() == subject_name.lower() for choice in f_choices):
+                    allowed.append(f)
+            
+            allowed_faculties[(c, subj_idx)] = allowed
+
+    # Apply constraints
+    for c in range(num_classes):
+        for subj in range(num_subjects):
+            allowed = allowed_faculties.get((c, subj), [])
+            
+            if allowed:
+                # If there are faculties who chose this subject, restrict to them
+                # For any faculty f NOT in allowed, set assignments to 0
+                for f in range(num_faculties):
+                    if f not in allowed:
+                        for d in range(num_days):
+                            for s in range(num_slots):
+                                model.Add(assignments[(c, d, s, subj, f)] == 0)
+    
     # Constraint 4: Faculty-subject preferences (soft constraint via objective)
     # Build a preference score matrix
     preference_bonus = []
@@ -226,33 +262,37 @@ def _generate_empty_timetable(classes):
 def _generate_fallback_timetable(classes, subjects, faculties, days, slots):
     """
     Fallback to simple round-robin assignment if CSP fails.
-    This ensures we always return a valid timetable structure.
+    Uses a class-dependent starting offset so each class gets a different
+    timetable pattern (avoids BEA and BEB showing identical schedules).
     """
     timetable = {}
-    
-    for class_name in classes:
+    n_subj = len(subjects) or 1
+    n_fac = len(faculties) or 1
+
+    for c, class_name in enumerate(classes):
         timetable[class_name] = {}
-        subject_index = 0
-        
+        # Start each class at a different point in the round-robin so timetables differ
+        subject_index = (c * 5) % n_subj
+
         for day in days:
             timetable[class_name][day] = {}
-            
+
             for slot in slots:
                 if not subjects:
                     timetable[class_name][day][slot] = None
                     continue
-                
+
                 subject = subjects[subject_index % len(subjects)]
                 faculty = faculties[subject_index % len(faculties)] if faculties else {"name": "TBD"}
-                
+
                 timetable[class_name][day][slot] = {
                     "subject": subject.get("name", "Unknown"),
                     "faculty": faculty.get("name", "TBD"),
                     "room": "TBD"
                 }
-                
+
                 subject_index += 1
-    
+
     return timetable
 
 
